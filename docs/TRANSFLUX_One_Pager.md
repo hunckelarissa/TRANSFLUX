@@ -35,11 +35,11 @@ TRANSFLUX = Flow(State) · Uncertainty(Value) · Adaptation(Survival)
 
 ## Статус
 
-Черновик спецификации v0.2. Python-прототипы примитивов. Open source (Apache 2.0).
+Черновик спецификации v0.3. Python-прототипы примитивов. Open source (Apache 2.0).
 
 ## Ссылки
 
-- [Спецификация](TRANSFLUX_Specification_v0.2.md) — формальное ядро
+- [Спецификация](TRANSFLUX_Specification_v0.3.md) — формальное ядро
 - [Сценарии применения](TRANSFLUX_Use_Cases.md) — четыре проработанных примера
 - [Манифест](TRANSFLUX_Manifesto.md) — позиция и голос
 - [Смежные парадигмы](TRANSFLUX_Related_Paradigms.md) — честное сравнение с fuzzy logic, reactive streams и др.

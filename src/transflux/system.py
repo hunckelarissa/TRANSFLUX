@@ -1,7 +1,7 @@
 """Оркестрация трёх осей: TransfluxSystem.
 
 Рекомендуемый паттерн (не обязательный компонент ядра) — см. Coupling
-Protocol в docs/TRANSFLUX_Specification_v0.2.md, §4.2 и DR-014.
+Protocol в docs/TRANSFLUX_Specification_v0.3.md, §4.2 и DR-014.
 """
 
 from dataclasses import dataclass

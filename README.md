@@ -1,6 +1,6 @@
 # TRANSFLUX
 
-**Версия спецификации: v0.2 (апрель 2026) — черновик.**
+**Версия спецификации: v0.3 (август 2026) — черновик.**
 
 Вычислительная парадигма **непрерывного становления**: состояние как поток, значение с неопределённостью, выживание под угрозой.
 
@@ -13,7 +13,7 @@ TRANSFLUX = Flow(State) · Uncertainty(Value) · Adaptation(Survival)
 | Документ | Назначение |
 |----------|------------|
 | [One-pager](docs/TRANSFLUX_One_Pager.md) | Обзор на одну страницу — начни здесь |
-| [Спецификация v0.2](docs/TRANSFLUX_Specification_v0.2.md) | Формальное ядро: примитивы, код, взаимодействие осей |
+| [Спецификация v0.3](docs/TRANSFLUX_Specification_v0.3.md) | Формальное ядро: примитивы, код, взаимодействие осей |
 | [Описание парадигмы](docs/TRANSFLUX_Paradigm.md) | Для разработчиков: аналогии, примеры, области применения |
 | [Манифест](docs/TRANSFLUX_Manifesto.md) | Позиция и призыв: голос парадигмы |
 | [Сценарии применения](docs/TRANSFLUX_Use_Cases.md) | Четыре проработанных use case |
@@ -37,6 +37,7 @@ TRANSFLUX = Flow(State) · Uncertainty(Value) · Adaptation(Survival)
 - **`src/transflux/`** — референсная реализация примитивов (ранний прототип).
 - **`tests/`** — тесты по спецификациям из [Formal Invariants](docs/TRANSFLUX_Formal_Invariants.md).
 - **`research/main/`** — исторические версии (v0.1).
+- **`docs/TRANSFLUX_Specification_v0.2.md`** — предыдущая спецификация (v0.2).
 - **`research/notes/`** — заметки, диаграммы, ранние эксперименты.
 
 ## Лицензия

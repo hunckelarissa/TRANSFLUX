@@ -1,7 +1,7 @@
 # TRANSFLUX API Reference
 
 > Компактный справочник по примитивам референсной реализации (`src/transflux/`).
-> Полная семантика и обоснования — в [спецификации v0.2](TRANSFLUX_Specification_v0.2.md).
+> Полная семантика и обоснования — в [спецификации v0.3](TRANSFLUX_Specification_v0.3.md).
 
 ```python
 from transflux import FluxVar, NoisyFloat, SurvivalState, TransfluxSystem

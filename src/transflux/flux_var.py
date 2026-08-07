@@ -3,7 +3,7 @@
 Переменная как русло: значение в движении, с историей, инерцией
 и комфортом текущего состояния.
 
-Спецификация: docs/TRANSFLUX_Specification_v0.2.md, §1.
+Спецификация: docs/TRANSFLUX_Specification_v0.3.md, §1.
 """
 
 from collections import deque

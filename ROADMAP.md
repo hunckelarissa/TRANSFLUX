@@ -1,6 +1,6 @@
 # TRANSFLUX Roadmap
 
-> Вынесено из спецификации (§7). Источник истины по статусу компонентов — [docs/TRANSFLUX_Specification_v0.2.md](docs/TRANSFLUX_Specification_v0.2.md).
+> Вынесено из спецификации (§7). Источник истины по статусу компонентов — [docs/TRANSFLUX_Specification_v0.3.md](docs/TRANSFLUX_Specification_v0.3.md).
 
 ## Текущий статус реализации
 

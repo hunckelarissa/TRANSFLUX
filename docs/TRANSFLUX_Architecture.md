@@ -1,6 +1,6 @@
 # TRANSFLUX: Архитектура
 
-> Обзор верхнего уровня. Формальная семантика — в [спецификации v0.2](TRANSFLUX_Specification_v0.2.md) (§4), сигнатуры — в [API Reference](TRANSFLUX_API_Reference.md).
+> Обзор верхнего уровня. Формальная семантика — в [спецификации v0.3](TRANSFLUX_Specification_v0.3.md) (§4), сигнатуры — в [API Reference](TRANSFLUX_API_Reference.md).
 
 ## Три ортогональные оси
 

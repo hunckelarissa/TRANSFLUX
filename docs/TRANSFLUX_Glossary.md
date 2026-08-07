@@ -133,7 +133,7 @@ TRANSFLUX = Flow(State) · Uncertainty(Value) · Adaptation(Survival)
 | [One-pager](TRANSFLUX_One_Pager.md) | Первое знакомство (2 мин) |
 | [Манифест](TRANSFLUX_Manifesto.md) | Позиция и голос |
 | [Описание парадигмы](TRANSFLUX_Paradigm.md) | Разработчики, архитекторы |
-| [Спецификация v0.2](TRANSFLUX_Specification_v0.2.md) | Формальное ядро |
+| [Спецификация v0.3](TRANSFLUX_Specification_v0.3.md) | Формальное ядро |
 | [Сценарии применения](TRANSFLUX_Use_Cases.md) | Конкретные примеры |
 | [Смежные парадигмы](TRANSFLUX_Related_Paradigms.md) | Честное позиционирование |
 | [Design Rationale](TRANSFLUX_Design_Rationale.md) | Обоснования решений |
