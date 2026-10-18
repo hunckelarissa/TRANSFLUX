@@ -8,6 +8,7 @@
 
 import math
 from dataclasses import dataclass
+from typing import Sequence
 
 
 @dataclass
@@ -20,8 +21,8 @@ class NoisyFloat:
 
     # --- Арифметика с propagation of uncertainty ---
     # Формулы основаны на линейном приближении (first-order Taylor).
-    # Confidence propagation: min (консервативная стратегия).
-    # Альтернативы (мультипликативная, байесовская) — предмет расширения.
+    # Confidence propagation: min (слабое звено). Решение зафиксировано:
+    # мультипликативная и байесовская стратегии отложены (DR-002, DR-016).
 
     def __add__(self, other: "NoisyFloat") -> "NoisyFloat":
         """σ_z = √(σ_a² + σ_b²)"""
@@ -100,3 +101,41 @@ class NoisyFloat:
         return (f"NoisyFloat({self.value:.4f} "
                 f"± {self.uncertainty:.4f}, "
                 f"conf={self.confidence:.0%})")
+
+
+def weighted_mean(readings: Sequence[NoisyFloat]) -> NoisyFloat:
+    """Среднее независимых измерений одной величины. Вес = 1/σ².
+
+    Точный датчик перевешивает шумный: большое uncertainty почти не двигает
+    ни значение, ни confidence. Это не арифметика `+` и `/`, где confidence
+    берётся как min (DR-016). Здесь confidence — среднее confidence с теми
+    же весами (DR-020).
+
+    Измерение с σ = 0 забирает весь вес. Если таких несколько и они
+    расходятся, uncertainty результата — их среднеквадратичный разброс,
+    а confidence — min среди них.
+
+    Пустой список — ValueError. Коррелированные измерения эта формула
+    не описывает: она занизит uncertainty, если датчики смотрят в одно.
+    """
+    if not readings:
+        raise ValueError("weighted_mean requires at least one reading")
+
+    exact = [reading for reading in readings if reading.uncertainty == 0.0]
+    if exact:
+        values = [reading.value for reading in exact]
+        mean = sum(values) / len(values)
+        spread = math.sqrt(sum((value - mean) ** 2 for value in values) / len(values))
+        return NoisyFloat(
+            value=mean,
+            uncertainty=spread,
+            confidence=min(reading.confidence for reading in exact),
+        )
+
+    weights = [1.0 / reading.uncertainty ** 2 for reading in readings]
+    total = sum(weights)
+    return NoisyFloat(
+        value=sum(reading.value * weight for reading, weight in zip(readings, weights)) / total,
+        uncertainty=1.0 / math.sqrt(total),
+        confidence=sum(reading.confidence * weight for reading, weight in zip(readings, weights)) / total,
+    )

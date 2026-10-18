@@ -35,7 +35,7 @@ TRANSFLUX = Flow(State) · Uncertainty(Value) · Adaptation(Survival)
 
 ## Статус
 
-Черновик спецификации v0.3. Python-прототипы примитивов. Open source (Apache 2.0).
+Черновик спецификации v0.3. Python-библиотека примитивов и оркестратора, синтетические сценарии. Open source (Apache 2.0).
 
 ## Ссылки
 

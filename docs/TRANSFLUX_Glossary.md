@@ -19,7 +19,7 @@ TRANSFLUX = Flow(State) · Uncertainty(Value) · Adaptation(Survival)
 | `FluxVar<T>` | State | value, velocity, acceleration, comfort, history, trauma_threshold | Переменная как русло |
 | `NoisyFloat` | Value | value, uncertainty, confidence | Значение как распределение |
 | `SurvivalState` | Survival | threat_level, panic_threshold, identity_hash, scope, decay_rate, fallback | Модель выживания |
-| `TransfluxSystem` | Orchestrator | state, survival, sensitivities | Паттерн оркестрации (не Core) |
+| `TransfluxSystem` | Orchestrator | state, value, survival, sensitivities | Цикл связи трёх осей |
 
 ---
 
@@ -29,10 +29,10 @@ TRANSFLUX = Flow(State) · Uncertainty(Value) · Adaptation(Survival)
 |---|---|---|
 | Gradient of Truth | NoisyFloat | Степень истинности: f(confidence, SNR) |
 | NoisyFlow | FluxVar × NoisyFloat | `FluxVar[NoisyFloat]` |
-| FlowingTrit | FluxVar | `FluxVar[Trit]` с непрерывным вектором |
+| FlowingTrit | FluxVar | Непрерывный трит: float, полюса `-1`, `0`, `+1`; `-0.5` допустим |
 | Continuous Becoming | FluxVar | Вычисление = поток, не вызов |
-| Polyphonic Identity | SurvivalState | Множество identity_hash на сущность |
-| Deadname Erasure | SurvivalState | Атомарная ротация всех ссылок |
+| Polyphonic Identity | SurvivalState | `PolyphonicIdentity`: маски; `in_group` не называет роль |
+| Deadname Erasure | SurvivalState | `erase` / `rotate_all`: старого хеша в книге не остаётся |
 | Consent-First | SurvivalState | Деструктивные операции требуют явного согласия |
 
 ---
@@ -44,6 +44,7 @@ TRANSFLUX = Flow(State) · Uncertainty(Value) · Adaptation(Survival)
 | **Panic-First** | Архитектурный принцип: приоритет выживания над целостностью данных |
 | **Consent-First** | Принцип API: деструктивные операции не выполняются без явной политики |
 | **trauma** | Событие: velocity превысила trauma_threshold (advisory, не blocking) |
+| **classify_jump** | `calm` / `alone` / `shared`: скачок этого датчика на фоне соседей |
 | **panic** | Фазовый переход: threat ≥ threshold → ротация identity, сброс threat |
 | **decay_rate** | Скорость затухания threat_level в стабильных условиях |
 | **momentum** | Образ инерции из манифеста; в коде = velocity + acceleration |
@@ -123,6 +124,14 @@ TRANSFLUX = Flow(State) · Uncertainty(Value) · Adaptation(Survival)
 | DR-013 | Advisory callbacks | Trauma/panic — сигнал, не блокировка |
 | DR-014 | Orchestrator pattern | Примитивы не знают друг о друге |
 | DR-015 | Один пакет, подмодули | Минимальный порог входа |
+| DR-016 | min() остаётся | Другие стратегии confidence отложены |
+| DR-017 | Нет constraints | Допустимость value — забота программиста |
+| DR-018 | FlowingTrit = float | Полюса — ориентиры, не закрытое множество |
+| DR-019 | Сначала Python | DSL, Rust и валидация отложены |
+| DR-020 | weighted_mean | Вес 1/σ²; confidence следует за весом, не за min |
+| DR-021 | Запасной режим | Panic залипает только если заранее задана пара backup |
+| DR-022 | classify_jump | alone / shared / calm; confidence не меняет |
+| DR-023 | Маски отдельно от panic | Стирание имён только явным вызовом |
 
 ---
 
@@ -144,3 +153,4 @@ TRANSFLUX = Flow(State) · Uncertainty(Value) · Adaptation(Survival)
 | [История](TRANSFLUX_History.md) | Как возник TRANSFLUX |
 | [Changelog](CHANGELOG.md) | История изменений |
 | [Roadmap](../ROADMAP.md) | Дорожная карта |
+| [Открытые вопросы](TRANSFLUX_Open_Questions.md) | Решения и то, что отложено |

@@ -39,6 +39,7 @@ class SurvivalState:
     )
     decay_rate: float = 0.0             # затухание threat за цикл
     on_panic: Optional[Callable] = field(default=None, repr=False)
+    peak_threat: float = 0.0           # уровень до сброса panic в этом update
     _panic_count: int = field(default=0, repr=False)
 
     def update(self, threat_delta: float) -> bool:
@@ -47,9 +48,10 @@ class SurvivalState:
         Применяет decay_rate (затухание) перед добавлением новой угрозы.
         Возвращает True, если был вызван panic.
         """
-        self.threat_level = max(0.0, min(1.0,
+        self.peak_threat = max(0.0, min(1.0,
             self.threat_level - self.decay_rate + threat_delta
         ))
+        self.threat_level = self.peak_threat
         if self.threat_level >= self.panic_threshold:
             self._panic()
             return True

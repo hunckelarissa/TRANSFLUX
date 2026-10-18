@@ -26,6 +26,7 @@ TRANSFLUX = Flow(State) · Uncertainty(Value) · Adaptation(Survival)
 | [Архитектура](docs/TRANSFLUX_Architecture.md) | Обзор верхнего уровня: три оси и их взаимодействие |
 | [История](docs/TRANSFLUX_History.md) | Как и почему возник TRANSFLUX |
 | [Changelog](docs/CHANGELOG.md) | История изменений по версиям |
+| [Открытые вопросы](docs/TRANSFLUX_Open_Questions.md) | Принятые решения и то, что отложено |
 
 ## Участие
 
@@ -34,8 +35,9 @@ TRANSFLUX = Flow(State) · Uncertainty(Value) · Adaptation(Survival)
 ## Структура репозитория
 
 - **`docs/`** — актуальная документация (источник истины).
-- **`src/transflux/`** — референсная реализация примитивов (ранний прототип).
-- **`tests/`** — тесты по спецификациям из [Formal Invariants](docs/TRANSFLUX_Formal_Invariants.md).
+- **`src/transflux/`** — Python-библиотека примитивов и оркестратора.
+- **`tests/`** — тесты инвариантов и синтетические сценарии (`tests/synthetic/`).
+- **`docs/figures/synthetic/`** — графики этих сценариев.
 - **`research/main/`** — исторические версии (v0.1).
 - **`docs/TRANSFLUX_Specification_v0.2.md`** — предыдущая спецификация (v0.2).
 - **`research/notes/`** — заметки, диаграммы, ранние эксперименты.
@@ -46,7 +48,7 @@ Apache 2.0 — см. [LICENSE](LICENSE).
 
 ## Статус
 
-Черновик / в разработке. Референсная реализация в `src/` — ранний прототип: примитивы из спецификации без гарантий стабильности API. Дорожная карта — [ROADMAP.md](ROADMAP.md), открытые вопросы — §8 спецификации.
+Черновик / в разработке, октябрь 2026. Носитель парадигмы — Python-библиотека в `src/transflux/`: три оси, `FlowingTrit`, `weighted_mean`, `classify_jump`, `PolyphonicIdentity`, оркестратор с запасным режимом. Концепция прогнана на синтетических сценариях. API ещё не обещает стабильность. Дорожная карта — [ROADMAP.md](ROADMAP.md), журнал решений — [docs/TRANSFLUX_Open_Questions.md](docs/TRANSFLUX_Open_Questions.md).
 
 ---
 

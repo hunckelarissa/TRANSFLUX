@@ -1,10 +1,10 @@
 # TRANSFLUX API Reference
 
-> Компактный справочник по примитивам референсной реализации (`src/transflux/`).
+> Компактный справочник Python-библиотеки (`src/transflux/`), октябрь 2026.
 > Полная семантика и обоснования — в [спецификации v0.3](TRANSFLUX_Specification_v0.3.md).
 
 ```python
-from transflux import FluxVar, NoisyFloat, SurvivalState, TransfluxSystem
+from transflux import FluxVar, FlowingTrit, NoisyFloat, PolyphonicIdentity, SurvivalState, TransfluxSystem, classify_jump, weighted_mean
 ```
 
 ---
@@ -30,7 +30,25 @@ from transflux import FluxVar, NoisyFloat, SurvivalState, TransfluxSystem
 | Метод | Возвращает | Описание |
 |---|---|---|
 | `update(new_value, dt=1.0)` | `FluxVar[T]` | обновить состояние; `dt ≤ 0` → `ValueError`; \|velocity\| > `trauma_threshold` → вызов `on_trauma` (значение устанавливается всегда, INV-F4) |
+| `flow(new_value, dt=1.0)` | `FluxVar[T]` | то же, что `update`. Python-форма оператора `~>`; сам оператор отложен вместе с DSL |
 | `trajectory()` | `List[T]` | история + текущее значение |
+
+Слоя `constraints` нет: допустимость `value` задаёт вызывающий код (DR-017).
+
+`classify_jump(sensor, neighbors) → "calm" | "alone" | "shared"` — скачок относительно соседей. Скачок: `|velocity| > trauma_threshold` этого датчика. `alone` — скачок есть, ни один другой датчик из списка его не подтвердил. Сам `sensor` в списке соседей не считается. Состояние не меняется (DR-022).
+
+---
+
+## FlowingTrit — непрерывный трит (спецификация §1.4)
+
+Полюса `FlowingTrit.NEGATIVE` (`-1`), `LIMINAL` (`0`), `POSITIVE` (`+1`). Поле `value: float` хранится как есть: `-0.5` допустим, значение вне `[-1, 1]` не обрезается (INV-T1).
+
+| Метод | Возвращает | Описание |
+|---|---|---|
+| `float(trit)` | `float` | само `value` |
+| `nearest_pole()` | `float` | ближайший полюс; при равном расстоянии — более ранний из `-1`, `0`, `+1`. Значение не меняет |
+
+Траектория: `FluxVar(value=FlowingTrit(...))` и дальше `flow()`. `float(trit)` нужен, чтобы `FluxVar` мог посчитать velocity.
 
 ---
 
@@ -61,6 +79,8 @@ from transflux import FluxVar, NoisyFloat, SurvivalState, TransfluxSystem
 | `is_reliable(min_confidence=0.7)` | `bool` | `confidence ≥ min_confidence` |
 | `gradient_of_truth()` | `float` | `confidence × (1 − e^(−SNR))`; при σ = 0 → `confidence` |
 
+`weighted_mean(readings) → NoisyFloat` — среднее независимых измерений одной величины. Вес `1/σ²`. При всех `σ > 0`: `uncertainty = 1/√(Σ 1/σ²)`, confidence — среднее confidence с теми же весами (DR-020). `σ = 0` забирает весь вес; если точные измерения расходятся, uncertainty — их среднеквадратичный разброс, confidence — `min` среди них. Пустой список → `ValueError`. Арифметика `+` и `/` этого веса не даёт.
+
 ---
 
 ## SurvivalState — Survival Model (спецификация §3)
@@ -88,7 +108,24 @@ from transflux import FluxVar, NoisyFloat, SurvivalState, TransfluxSystem
 | `update_from_flow(flux, sensitivity=0.1)` | `bool` | `threat_delta = min(1, \|velocity\| × sensitivity)` |
 | `is_safe()` | `bool` | `threat_level < panic_threshold × 0.5` |
 
-Panic (внутренний `_panic()`): инкремент счётчика, ротация `identity_hash`, сброс `threat_level` в 0, вызов `on_panic`. Не отменяется callbacks (DR-013).
+Panic (внутренний `_panic()`): инкремент счётчика, ротация `identity_hash`, сброс `threat_level` в 0, вызов `on_panic`. Не отменяется callbacks (DR-013). Маски `PolyphonicIdentity` при этом не трогает.
+
+---
+
+## PolyphonicIdentity — маски (спецификация §3.4)
+
+Несколько хешей одной сущности. Panic их не вращает, пока callback сам этого не попросит (DR-023).
+
+| Метод | Возвращает | Описание |
+|---|---|---|
+| `add(role)` | `str` | новая маска; повтор роли → `ValueError` |
+| `alias(role, source)` | `str` | ещё одна ссылка на хеш `source` |
+| `present(role)` | `str` | хеш этой роли |
+| `grant(role, group)` | `None` | текущий хеш роли входит в группу |
+| `in_group(group)` | `bool` | есть ли живая маска в группе; роль не называется |
+| `holds(identity_hash)` | `bool` | показывает ли какая-нибудь маска этот хеш |
+| `erase(old_hash)` | `str` | все ссылки на старый хеш становятся одним новым; неизвестный хеш → `KeyError` |
+| `rotate_all()` | `dict` | каждый различный хеш заменён; старых в книге нет |
 
 ---
 
@@ -102,8 +139,16 @@ Panic (внутренний `_panic()`): инкремент счётчика, р
 | `survival: SurvivalState` | — | ось Survival |
 | `flow_sensitivity` | `0.1` | чувствительность связи State → Survival |
 | `uncertainty_sensitivity` | `0.5` | чувствительность связи Value → Survival |
+| `value: NoisyFloat \| None` | `None` | последнее наблюдение Value, записывается в `tick` |
+| `ticks` | `0` | сколько раз вызван `tick` |
+| `peak_threat` | `0` | наибольшая угроза внутри цикла, до того как panic обнулит `threat_level` |
+| `backup_value` | `None` | запасное состояние; вместе с `backup_noisy` вооружает режим |
+| `backup_noisy` | `None` | запасное наблюдение Value |
+| `degraded` | `False` | система слушает запасную пару, а не вход `tick` |
 
-`tick(new_value, noisy_value, dt=1.0) → bool` — один цикл: update state → coupling → при panic присваивает `fallback` в state. Возвращает `True`, если был panic.
+`tick(new_value, noisy_value, dt=1.0) → bool` — один цикл. Если `degraded` и запасная пара задана, вход подменяется до `state.flow`. Дальше: запомнить `value` → coupling → при panic `state.flow(fallback)`. Если на этом цикле был panic и пара задана, `degraded` становится `True`. Возвращает `True`, если был panic.
+
+`backup_armed() → bool` — заданы и `backup_value`, и `backup_noisy`. `recover()` снимает `degraded`; сама пара остаётся. Без вооружённой пары panic не залипает (DR-021).
 
 ---
 

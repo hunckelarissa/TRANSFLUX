@@ -74,3 +74,31 @@ def test_transflux_system_panic_resets_to_fallback():
     assert panicked
     assert system.state.value == 0.0
     assert system.survival.threat_level == 0.0
+    assert system.value.confidence == 0.2
+    assert system.ticks == 1
+
+
+def test_orchestrator_panic_emerges_from_falling_confidence():
+    """Нестабильное знание само доводит систему до panic."""
+    system = TransfluxSystem(
+        state=FluxVar(value=0.0, trauma_threshold=1000.0),
+        survival=SurvivalState(panic_threshold=0.75, fallback=0.0, decay_rate=0.02),
+        flow_sensitivity=0.08,
+        uncertainty_sensitivity=0.4,
+    )
+    value = NoisyFloat(value=1.0, uncertainty=0.1, confidence=0.95)
+    saw_panic = False
+    for t in range(10):
+        reading = NoisyFloat(
+            t * 0.5,
+            uncertainty=t * 0.08,
+            confidence=max(0.3, 0.95 - t * 0.07),
+        )
+        value = value + reading
+        if system.tick(new_value=t * 1.5, noisy_value=value):
+            saw_panic = True
+            break
+    assert saw_panic
+    assert system.state.value == 0.0
+    assert system.survival._panic_count == 1
+    assert system.value is value

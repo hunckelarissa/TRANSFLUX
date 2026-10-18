@@ -8,7 +8,7 @@
 
 from collections import deque
 from dataclasses import dataclass, field
-from typing import Callable, Generic, List, Optional, TypeVar
+from typing import Callable, Generic, List, Literal, Optional, Sequence, TypeVar
 
 T = TypeVar("T")
 
@@ -26,6 +26,7 @@ class FluxVar(Generic[T]):
     )
     trauma_threshold: float = 10.0
     on_trauma: Optional[Callable] = field(default=None, repr=False)
+    # Слоя constraints нет намеренно: допустимость value задаёт вызывающий код.
 
     def update(self, new_value: T, dt: float = 1.0) -> "FluxVar[T]":
         """Обновить состояние с учётом инерции."""
@@ -58,6 +59,35 @@ class FluxVar(Generic[T]):
         if self.on_trauma:
             self.on_trauma(self, velocity)
 
+    def flow(self, new_value: T, dt: float = 1.0) -> "FluxVar[T]":
+        """Течение к новому значению — Python-форма оператора `~>`.
+
+        То же самое, что `update`. Синтаксис `~>` и отдельный DSL отложены:
+        в библиотеке намерение парадигмы выражается этим методом.
+        """
+        return self.update(new_value, dt)
+
     def trajectory(self) -> List[T]:
         """Полная траектория: история + текущее значение."""
         return list(self.history) + [self.value]
+
+
+JumpKind = Literal["calm", "alone", "shared"]
+
+
+def classify_jump(sensor: "FluxVar", neighbors: Sequence["FluxVar"]) -> JumpKind:
+    """Один датчик дёрнулся или вместе с соседями.
+
+    «Дёрнулся» значит то же, что травма: |velocity| строго выше своего
+    trauma_threshold. Сосед из списка, который есть сам sensor, не считается.
+    Пустое соседство и скачок — alone: подтверждения нет.
+
+    Функция ничего не меняет. Снизить confidence или поднять угрозу
+    решает вызывающий код (DR-022).
+    """
+    if abs(sensor.velocity) <= sensor.trauma_threshold:
+        return "calm"
+    peers = [peer for peer in neighbors if peer is not sensor]
+    if any(abs(peer.velocity) > peer.trauma_threshold for peer in peers):
+        return "shared"
+    return "alone"

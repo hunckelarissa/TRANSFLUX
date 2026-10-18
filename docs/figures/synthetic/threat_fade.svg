@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="820" height="236" viewBox="0 0 820 236">
+<rect width="100%" height="100%" fill="#fbfcfd"/>
+<text x="72" y="26" font-family="Segoe UI, sans-serif" font-size="16" fill="#1f2933">Одна и та же вспышка: паранойя срывается, затухание отпускает</text>
+<text x="72" y="54" font-family="Segoe UI, sans-serif" font-size="13" fill="#1f2933">threat_level</text>
+<line x1="72" y1="192.0" x2="796" y2="192.0" stroke="#e4e7eb"/>
+<text x="64" y="196.0" text-anchor="end" font-family="Segoe UI, sans-serif" font-size="11" fill="#52606d">-0.10</text>
+<line x1="72" y1="149.3" x2="796" y2="149.3" stroke="#e4e7eb"/>
+<text x="64" y="153.3" text-anchor="end" font-family="Segoe UI, sans-serif" font-size="11" fill="#52606d">0.23</text>
+<line x1="72" y1="106.7" x2="796" y2="106.7" stroke="#e4e7eb"/>
+<text x="64" y="110.7" text-anchor="end" font-family="Segoe UI, sans-serif" font-size="11" fill="#52606d">0.57</text>
+<line x1="72" y1="64.0" x2="796" y2="64.0" stroke="#e4e7eb"/>
+<text x="64" y="68.0" text-anchor="end" font-family="Segoe UI, sans-serif" font-size="11" fill="#52606d">0.90</text>
+<line x1="216.8" y1="64" x2="216.8" y2="192" stroke="#9b2226" stroke-dasharray="3 3"/>
+<text x="220.8" y="76" font-family="Segoe UI, sans-serif" font-size="11" fill="#9b2226">panic</text>
+<line x1="72" y1="82.8" x2="796" y2="82.8" stroke="#9b2226" stroke-dasharray="5 4"/>
+<text x="76" y="78.8" font-family="Segoe UI, sans-serif" font-size="11" fill="#9b2226">порог panic</text>
+<rect x="682" y="44" width="10" height="10" fill="#2f6f4e"/>
+<text x="696" y="53" font-family="Segoe UI, sans-serif" font-size="11" fill="#1f2933">decay = 0.08</text>
+<polyline fill="none" stroke="#2f6f4e" stroke-width="2" points="72.0,164.1 120.3,148.6 168.5,133.2 216.8,117.7 265.1,128.0 313.3,138.3 361.6,148.6 409.9,159.0 458.1,169.3 506.4,179.6 554.7,179.6 602.9,179.6 651.2,179.6 699.5,179.6 747.7,179.6 796.0,179.6"/>
+<rect x="597" y="44" width="10" height="10" fill="#9b2226"/>
+<text x="611" y="53" font-family="Segoe UI, sans-serif" font-size="11" fill="#1f2933">decay = 0</text>
+<polyline fill="none" stroke="#9b2226" stroke-width="2" points="72.0,153.8 120.3,128.0 168.5,102.2 216.8,76.4 265.1,179.6 313.3,179.6 361.6,179.6 409.9,179.6 458.1,179.6 506.4,179.6 554.7,179.6 602.9,179.6 651.2,179.6 699.5,179.6 747.7,179.6 796.0,179.6"/>
+<text x="434.0" y="220" text-anchor="middle" font-family="Segoe UI, sans-serif" font-size="12" fill="#52606d">цикл</text>
+</svg>

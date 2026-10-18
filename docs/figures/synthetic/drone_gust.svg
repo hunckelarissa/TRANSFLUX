@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="820" height="432" viewBox="0 0 820 432">
+<rect width="100%" height="100%" fill="#fbfcfd"/>
+<text x="72" y="26" font-family="Segoe UI, sans-serif" font-size="16" fill="#1f2933">Дрон: порыв не становится новой правдой</text>
+<text x="72" y="54" font-family="Segoe UI, sans-serif" font-size="13" fill="#1f2933">положение</text>
+<line x1="72" y1="192.0" x2="796" y2="192.0" stroke="#e4e7eb"/>
+<text x="64" y="196.0" text-anchor="end" font-family="Segoe UI, sans-serif" font-size="11" fill="#52606d">-1.68</text>
+<line x1="72" y1="149.3" x2="796" y2="149.3" stroke="#e4e7eb"/>
+<text x="64" y="153.3" text-anchor="end" font-family="Segoe UI, sans-serif" font-size="11" fill="#52606d">4.11</text>
+<line x1="72" y1="106.7" x2="796" y2="106.7" stroke="#e4e7eb"/>
+<text x="64" y="110.7" text-anchor="end" font-family="Segoe UI, sans-serif" font-size="11" fill="#52606d">9.89</text>
+<line x1="72" y1="64.0" x2="796" y2="64.0" stroke="#e4e7eb"/>
+<text x="64" y="68.0" text-anchor="end" font-family="Segoe UI, sans-serif" font-size="11" fill="#52606d">15.7</text>
+<line x1="485.7" y1="64" x2="485.7" y2="192" stroke="#9b2226" stroke-dasharray="3 3"/>
+<text x="489.7" y="76" font-family="Segoe UI, sans-serif" font-size="11" fill="#9b2226">panic</text>
+<rect x="731" y="44" width="10" height="10" fill="#1d4e89"/>
+<text x="745" y="53" font-family="Segoe UI, sans-serif" font-size="11" fill="#1f2933">state</text>
+<polyline fill="none" stroke="#1d4e89" stroke-width="2" points="72.0,179.6 175.4,172.2 278.9,164.9 382.3,161.2 485.7,161.2 589.1,161.2 692.6,161.2 796.0,161.2"/>
+<rect x="660" y="44" width="10" height="10" fill="#c44900"/>
+<text x="674" y="53" font-family="Segoe UI, sans-serif" font-size="11" fill="#1f2933">команда</text>
+<polyline fill="none" stroke="#c44900" stroke-width="2" points="72.0,179.6 175.4,172.2 278.9,164.9 382.3,161.2 485.7,76.4 589.1,161.2 692.6,161.2 796.0,161.2"/>
+<text x="72" y="250" font-family="Segoe UI, sans-serif" font-size="13" fill="#1f2933">пик угрозы в цикле</text>
+<line x1="72" y1="388.0" x2="796" y2="388.0" stroke="#e4e7eb"/>
+<text x="64" y="392.0" text-anchor="end" font-family="Segoe UI, sans-serif" font-size="11" fill="#52606d">-0.12</text>
+<line x1="72" y1="345.3" x2="796" y2="345.3" stroke="#e4e7eb"/>
+<text x="64" y="349.3" text-anchor="end" font-family="Segoe UI, sans-serif" font-size="11" fill="#52606d">0.29</text>
+<line x1="72" y1="302.7" x2="796" y2="302.7" stroke="#e4e7eb"/>
+<text x="64" y="306.7" text-anchor="end" font-family="Segoe UI, sans-serif" font-size="11" fill="#52606d">0.71</text>
+<line x1="72" y1="260.0" x2="796" y2="260.0" stroke="#e4e7eb"/>
+<text x="64" y="264.0" text-anchor="end" font-family="Segoe UI, sans-serif" font-size="11" fill="#52606d">1.12</text>
+<line x1="485.7" y1="260" x2="485.7" y2="388" stroke="#9b2226" stroke-dasharray="3 3"/>
+<text x="489.7" y="272" font-family="Segoe UI, sans-serif" font-size="11" fill="#9b2226">panic</text>
+<line x1="72" y1="298.2" x2="796" y2="298.2" stroke="#9b2226" stroke-dasharray="5 4"/>
+<text x="76" y="294.2" font-family="Segoe UI, sans-serif" font-size="11" fill="#9b2226">порог</text>
+<rect x="724" y="240" width="10" height="10" fill="#9b2226"/>
+<text x="738" y="249" font-family="Segoe UI, sans-serif" font-size="11" fill="#1f2933">threat</text>
+<polyline fill="none" stroke="#9b2226" stroke-width="2" points="72.0,375.6 175.4,367.4 278.9,359.1 382.3,355.0 485.7,272.4 589.1,375.6 692.6,375.6 796.0,375.6"/>
+<text x="434.0" y="416" text-anchor="middle" font-family="Segoe UI, sans-serif" font-size="12" fill="#52606d">тик</text>
+</svg>

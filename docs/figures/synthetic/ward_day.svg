@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="820" height="628" viewBox="0 0 820 628">
+<rect width="100%" height="100%" fill="#fbfcfd"/>
+<text x="72" y="26" font-family="Segoe UI, sans-serif" font-size="16" fill="#1f2933">Палата: после panic система держится запасного датчика</text>
+<text x="72" y="54" font-family="Segoe UI, sans-serif" font-size="13" fill="#1f2933">температура</text>
+<line x1="72" y1="192.0" x2="796" y2="192.0" stroke="#e4e7eb"/>
+<text x="64" y="196.0" text-anchor="end" font-family="Segoe UI, sans-serif" font-size="11" fill="#52606d">36.2</text>
+<line x1="72" y1="149.3" x2="796" y2="149.3" stroke="#e4e7eb"/>
+<text x="64" y="153.3" text-anchor="end" font-family="Segoe UI, sans-serif" font-size="11" fill="#52606d">37.7</text>
+<line x1="72" y1="106.7" x2="796" y2="106.7" stroke="#e4e7eb"/>
+<text x="64" y="110.7" text-anchor="end" font-family="Segoe UI, sans-serif" font-size="11" fill="#52606d">39.1</text>
+<line x1="72" y1="64.0" x2="796" y2="64.0" stroke="#e4e7eb"/>
+<text x="64" y="68.0" text-anchor="end" font-family="Segoe UI, sans-serif" font-size="11" fill="#52606d">40.6</text>
+<line x1="491.2" y1="64" x2="491.2" y2="192" stroke="#9b2226" stroke-dasharray="3 3"/>
+<text x="495.2" y="76" font-family="Segoe UI, sans-serif" font-size="11" fill="#9b2226">panic</text>
+<rect x="731" y="44" width="10" height="10" fill="#1d4e89"/>
+<text x="745" y="53" font-family="Segoe UI, sans-serif" font-size="11" fill="#1f2933">state</text>
+<polyline fill="none" stroke="#1d4e89" stroke-width="2" points="72.0,179.6 110.1,176.7 148.2,173.9 186.3,171.0 224.4,168.1 262.5,165.3 300.6,162.4 338.7,159.5 376.8,76.4 414.9,156.7 453.1,156.7 491.2,179.6 529.3,153.8 567.4,153.8 605.5,153.8 643.6,153.8 681.7,153.8 719.8,153.8 757.9,153.8 796.0,153.8"/>
+<rect x="667" y="44" width="10" height="10" fill="#c44900"/>
+<text x="681" y="53" font-family="Segoe UI, sans-serif" font-size="11" fill="#1f2933">датчик</text>
+<polyline fill="none" stroke="#c44900" stroke-width="2" points="72.0,179.6 110.1,176.7 148.2,173.9 186.3,171.0 224.4,168.1 262.5,165.3 300.6,162.4 338.7,159.5 376.8,76.4 414.9,156.7 453.1,156.7 491.2,156.7 529.3,156.7 567.4,156.7 605.5,156.7 643.6,156.7 681.7,156.7 719.8,156.7 757.9,156.7 796.0,156.7"/>
+<text x="72" y="250" font-family="Segoe UI, sans-serif" font-size="13" fill="#1f2933">уверенность</text>
+<line x1="72" y1="388.0" x2="796" y2="388.0" stroke="#e4e7eb"/>
+<text x="64" y="392.0" text-anchor="end" font-family="Segoe UI, sans-serif" font-size="11" fill="#52606d">0.11</text>
+<line x1="72" y1="345.3" x2="796" y2="345.3" stroke="#e4e7eb"/>
+<text x="64" y="349.3" text-anchor="end" font-family="Segoe UI, sans-serif" font-size="11" fill="#52606d">0.42</text>
+<line x1="72" y1="302.7" x2="796" y2="302.7" stroke="#e4e7eb"/>
+<text x="64" y="306.7" text-anchor="end" font-family="Segoe UI, sans-serif" font-size="11" fill="#52606d">0.73</text>
+<line x1="72" y1="260.0" x2="796" y2="260.0" stroke="#e4e7eb"/>
+<text x="64" y="264.0" text-anchor="end" font-family="Segoe UI, sans-serif" font-size="11" fill="#52606d">1.04</text>
+<line x1="491.2" y1="260" x2="491.2" y2="388" stroke="#9b2226" stroke-dasharray="3 3"/>
+<text x="495.2" y="272" font-family="Segoe UI, sans-serif" font-size="11" fill="#9b2226">panic</text>
+<rect x="717" y="240" width="10" height="10" fill="#7a306c"/>
+<text x="731" y="249" font-family="Segoe UI, sans-serif" font-size="11" fill="#1f2933">система</text>
+<polyline fill="none" stroke="#7a306c" stroke-width="2" points="72.0,276.5 110.1,276.5 148.2,276.5 186.3,276.5 224.4,276.5 262.5,276.5 300.6,276.5 338.7,276.5 376.8,276.5 414.9,279.3 453.1,327.4 491.2,348.1 529.3,272.4 567.4,272.4 605.5,272.4 643.6,272.4 681.7,272.4 719.8,272.4 757.9,272.4 796.0,272.4"/>
+<rect x="653" y="240" width="10" height="10" fill="#c44900"/>
+<text x="667" y="249" font-family="Segoe UI, sans-serif" font-size="11" fill="#1f2933">датчик</text>
+<polyline fill="none" stroke="#c44900" stroke-width="2" points="72.0,276.5 110.1,276.5 148.2,276.5 186.3,276.5 224.4,276.5 262.5,276.5 300.6,276.5 338.7,276.5 376.8,276.5 414.9,279.3 453.1,327.4 491.2,348.1 529.3,368.7 567.4,375.6 605.5,375.6 643.6,375.6 681.7,375.6 719.8,375.6 757.9,375.6 796.0,375.6"/>
+<text x="72" y="446" font-family="Segoe UI, sans-serif" font-size="13" fill="#1f2933">пик угрозы в цикле</text>
+<line x1="72" y1="584.0" x2="796" y2="584.0" stroke="#e4e7eb"/>
+<text x="64" y="588.0" text-anchor="end" font-family="Segoe UI, sans-serif" font-size="11" fill="#52606d">-0.11</text>
+<line x1="72" y1="541.3" x2="796" y2="541.3" stroke="#e4e7eb"/>
+<text x="64" y="545.3" text-anchor="end" font-family="Segoe UI, sans-serif" font-size="11" fill="#52606d">0.30</text>
+<line x1="72" y1="498.7" x2="796" y2="498.7" stroke="#e4e7eb"/>
+<text x="64" y="502.7" text-anchor="end" font-family="Segoe UI, sans-serif" font-size="11" fill="#52606d">0.71</text>
+<line x1="72" y1="456.0" x2="796" y2="456.0" stroke="#e4e7eb"/>
+<text x="64" y="460.0" text-anchor="end" font-family="Segoe UI, sans-serif" font-size="11" fill="#52606d">1.12</text>
+<line x1="491.2" y1="456" x2="491.2" y2="584" stroke="#9b2226" stroke-dasharray="3 3"/>
+<text x="495.2" y="468" font-family="Segoe UI, sans-serif" font-size="11" fill="#9b2226">panic</text>
+<line x1="72" y1="494.3" x2="796" y2="494.3" stroke="#9b2226" stroke-dasharray="5 4"/>
+<text x="76" y="490.3" font-family="Segoe UI, sans-serif" font-size="11" fill="#9b2226">порог</text>
+<rect x="724" y="436" width="10" height="10" fill="#9b2226"/>
+<text x="738" y="445" font-family="Segoe UI, sans-serif" font-size="11" fill="#1f2933">threat</text>
+<polyline fill="none" stroke="#9b2226" stroke-width="2" points="72.0,568.8 110.1,568.8 148.2,568.8 186.3,568.8 224.4,568.8 262.5,568.8 300.6,568.8 338.7,568.8 376.8,554.6 414.9,539.0 453.1,505.3 491.2,468.4 529.3,571.1 567.4,571.6 605.5,571.6 643.6,571.6 681.7,571.6 719.8,571.6 757.9,571.6 796.0,571.6"/>
+<text x="434.0" y="612" text-anchor="middle" font-family="Segoe UI, sans-serif" font-size="12" fill="#52606d">час</text>
+</svg>

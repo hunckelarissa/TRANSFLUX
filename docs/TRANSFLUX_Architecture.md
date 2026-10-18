@@ -10,7 +10,7 @@ TRANSFLUX = Flow(State) · Uncertainty(Value) · Adaptation(Survival)
 
 | Вопрос системы | Ось | Примитив | Модуль |
 |---|---|---|---|
-| Что у меня есть? | State Model | `FluxVar<T>` | `src/transflux/flux_var.py` |
+| Что у меня есть? | State Model | `FluxVar<T>`, `FlowingTrit` | `src/transflux/flux_var.py`, `flowing_trit.py` |
 | Насколько это точно? | Value Model | `NoisyFloat` | `src/transflux/noisy_float.py` |
 | Что делать под угрозой? | Survival Model | `SurvivalState` | `src/transflux/survival.py` |
 
@@ -48,11 +48,12 @@ State ──velocity──▶ Survival ◀──confidence── Value
 Порядок цикла (`TransfluxSystem.tick`):
 
 ```
-1. State:    flux.update(new_value, dt)
-2. Value:    noisy_value из источника
+0. Backup:   если degraded и запасная пара задана — подменить вход
+1. State:    flux.flow(new_value, dt)
+2. Value:    система запоминает noisy_value
 3. Coupling: survival.update_from_flow(flux)
 4. Coupling: survival.update_from_uncertainty(noisy_value)
-5. Panic:    если panic → flux.update(survival.fallback)
+5. Panic:    если panic → flux.flow(survival.fallback); если пара задана → degraded
 ```
 
 ## События
@@ -61,4 +62,8 @@ State ──velocity──▶ Survival ◀──confidence── Value
 
 ## Гарантии
 
-Поведение реализации фиксировано инвариантами INV/OP/CP ([Formal Invariants](TRANSFLUX_Formal_Invariants.md)) и проверяется тестами `tests/test_invariants.py`, `tests/test_operations.py`, `tests/test_coupling.py`.
+Поведение реализации фиксировано инвариантами INV/OP/CP ([Formal Invariants](TRANSFLUX_Formal_Invariants.md)) и проверяется тестами в `tests/`, включая синтетические сценарии `tests/synthetic/`.
+
+## Состав библиотеки
+
+Помимо трёх осей в пакете есть `FlowingTrit`, `weighted_mean`, `classify_jump`, `PolyphonicIdentity` и запасной режим оркестратора (`backup_value`, `backup_noisy`, `degraded`, `recover`). Что ещё не сделано и что отложено — в [ROADMAP.md](../ROADMAP.md).

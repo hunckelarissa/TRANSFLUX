@@ -40,11 +40,11 @@
 
 - Код в спецификации — иллюстративный (Python, читаемость > производительность).
 - Код реализации — с тестами, покрывающими инварианты из Formal Invariants.
-- Каноническое API — `FluxVar`, `NoisyFloat`, `SurvivalState`. Другие имена — алиасы или эксперименты.
+- Каноническое API — то, что экспортирует пакет `transflux` (`FluxVar`, `NoisyFloat`, `SurvivalState`, `TransfluxSystem`, `FlowingTrit`, `weighted_mean`, `classify_jump`, `PolyphonicIdentity`). Другие имена — алиасы или эксперименты.
 
 ### Локальная проверка
 
-Референсная реализация лежит в `src/transflux/`, тесты — в `tests/`:
+Библиотека лежит в `src/transflux/`, тесты — в `tests/` (инварианты и `tests/synthetic/`):
 
 ```
 pip install -e .[dev]

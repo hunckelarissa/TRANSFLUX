@@ -109,12 +109,13 @@ class FluxVar(Generic[T]):
 x ~> 100   ≡   x.update(100)
 ```
 
-Оператор `~>` не реализован в Python. Он является элементом будущего DSL / LUMEN и служит для записи намерения парадигмы.
+В Python-библиотеке течение записывается методом `flow(new_value, dt)` — это то же самое, что `update()`. Оператор `~>` и отдельный DSL / LUMEN отложены (DR-019): сначала концепция проверяется библиотекой.
 
 ### 1.4 Производные концепции
 
-- **FlowingTrit** — `FluxVar[Trit]`, где `Trit ∈ {-1, 0, +1}`, с непрерывным вектором перехода между состояниями. Даже троичная логика (ср. «Сетунь») остаётся дискретной; FlowingTrit вводит траекторию между дискретными точками.
+- **FlowingTrit** — непрерывный трит. Полюса `-1`, `0`, `+1` задают смысл (отрицание, порог, утверждение), а само состояние — число с плавающей точкой. `-0.5` — обычное значение, не округление к ближайшей метке. Диапазон не проверяется: значение вне `[-1, 1]` остаётся как есть, это ответственность вызывающего кода (DR-017, DR-018). Траекторию между состояниями даёт `FluxVar[FlowingTrit]`: velocity — вектор перехода.
 - **Continuous Becoming** — вычисление как поток `FluxVar`: сущность существует, пока получает поток данных. Архитектурный образ, близкий к сильной реактивности и нейроморфной интуиции «память и процессор не разделены»; в императивном коде реализуется через циклы событий, стримы или runtime.
+- **classify_jump** — сравнение скачка с соседями. `|velocity| > trauma_threshold` у одного и тишина у соседей даёт `alone`; скачок вместе с соседом даёт `shared`; иначе `calm`. На пороге скачка ещё нет: сравнение строгое, как у травмы. Функция не меняет ни значение, ни confidence (DR-022). Вызывающий код сам решает, расширять ли uncertainty одиночного датчика перед `weighted_mean`.
 
 ### 1.5 Заметка о терминологии
 
@@ -147,8 +148,8 @@ class NoisyFloat:
 
     # --- Арифметика с propagation of uncertainty ---
     # Формулы основаны на линейном приближении (first-order Taylor).
-    # Confidence propagation: min (консервативная стратегия).
-    # Альтернативы (мультипликативная, байесовская) — предмет расширения.
+    # Confidence propagation: min (слабое звено). Зафиксировано (DR-016).
+    # Мультипликативная и байесовская стратегии отложены.
 
     def __add__(self, other: 'NoisyFloat') -> 'NoisyFloat':
         """σ_z = √(σ_a² + σ_b²)"""
@@ -241,6 +242,16 @@ d = a * b   # → NoisyFloat(10.0000 ± 0.7071, conf=85%)
 ```
 
 Формулы основаны на линейном приближении propagation of uncertainty (first-order Taylor expansion). Для сильно нелинейных операций или распределений, далёких от нормального, может потребоваться Monte-Carlo propagation или unscented transform — это предмет расширения, не ядра.
+
+Несколько независимых измерений одной величины складываются не через `+` и `/`, а через `weighted_mean`: вес каждого равен `1/σ²`. Тогда
+
+```
+value       = Σ(x_i / σ_i²) / Σ(1/σ_i²)
+uncertainty = 1 / √(Σ(1/σ_i²))
+confidence  = Σ(c_i / σ_i²) / Σ(1/σ_i²)
+```
+
+Большое `σ` почти не двигает ни значение, ни confidence. Это сознательно не `min` (DR-020): иначе сбойный датчик запрещал бы итог, даже если его вес близок к нулю. Измерение с `σ = 0` забирает весь вес. Пустой список — ошибка. Формула предполагает независимость; коррелированные датчики она опишет слишком уверенно.
 
 ### 2.4 Производные концепции
 
@@ -371,8 +382,8 @@ def _new_hash() -> str:
 
 ### 3.4 Производные концепции
 
-- **Polyphonic Identity** — множество `identity_hash` на одну сущность (маски без раскрытия «настоящего» слоя). Один ключ — множество масок: доказательство принадлежности без outing. Применимо к квир-контекстам, репрессивным юрисдикциям, журналистике, правозащите.
-- **Deadname Erasure** — атомарная операция замены всех ссылок на старый идентификатор. Не `find & replace`, а транзакция с гарантией полного удаления предыдущего хеша.
+- **Polyphonic Identity** — `PolyphonicIdentity`: несколько масок одной сущности, у каждой свой хеш. `in_group(group)` отвечает только да или нет и не называет роль. Panic сам книгу масок не трогает.
+- **Deadname Erasure** — `erase(old_hash)` заменяет все ссылки на этот хеш одним новым: и слоты, и членство в группах. После возврата старого хеша в книге нет. `rotate_all()` делает это для каждой маски. Вызов — из callback panic или явно, не из самого `SurvivalState` (DR-023).
 - **Consent-First** — принцип проектирования API: необратимые и деструктивные операции (уничтожение данных, смена идентичности) не выполняются по умолчанию без явной политики согласия. Противовес тихим побочным эффектам.
 
 ---
@@ -448,11 +459,11 @@ for t in range(10):
 **Порядок обновления в цикле:**
 
 ```
-1. State:    flux.update(new_value, dt)
+1. State:    flux.flow(new_value, dt)
 2. Value:    value = compute_value(...)       # NoisyFloat из источника
 3. Coupling: survival.update_from_flow(flux)
 4. Coupling: survival.update_from_uncertainty(value)
-5. Panic:    если panic сработал → flux.value = survival.fallback
+5. Panic:    если panic сработал → flux.flow(survival.fallback, dt)
 ```
 
 Шаги 3-4 можно выполнять в любом порядке (оба только добавляют threat_delta). Шаг 5 — побочный эффект panic, выполняемый orchestrator-ом.
@@ -480,26 +491,42 @@ class TransfluxSystem:
     survival: SurvivalState
     flow_sensitivity: float = 0.1
     uncertainty_sensitivity: float = 0.5
+    value: Optional[NoisyFloat] = None   # последнее наблюдение Value
+    ticks: int = 0
+    backup_value: Any = None             # запасное состояние
+    backup_noisy: Optional[NoisyFloat] = None
+    degraded: bool = False
 
     def tick(self, new_value, noisy_value: NoisyFloat, dt: float = 1.0):
         """Один цикл обновления всех осей."""
-        self.state.update(new_value, dt)
+        if self.degraded and self.backup_armed():
+            new_value = self.backup_value
+            noisy_value = self.backup_noisy
+        self.ticks += 1
+        self.state.flow(new_value, dt)
+        self.value = noisy_value
 
         panicked = False
         panicked |= self.survival.update_from_flow(
             self.state, self.flow_sensitivity
         )
+        flow_peak = self.survival.peak_threat
         panicked |= self.survival.update_from_uncertainty(
             noisy_value, self.uncertainty_sensitivity
         )
+        self.peak_threat = max(flow_peak, self.survival.peak_threat)
 
         if panicked and self.survival.fallback is not None:
-            self.state.update(self.survival.fallback, dt)
+            self.state.flow(self.survival.fallback, dt)
+        if panicked and self.backup_armed():
+            self.degraded = True
 
         return panicked
 ```
 
 `TransfluxSystem` — не обязательный компонент ядра, а рекомендуемый паттерн. Вызывающий код может реализовать оркестрацию самостоятельно.
+
+Запасной режим (DR-021) не включается сам. Он удерживается после panic только если заранее заданы и `backup_value`, и `backup_noisy`. Пока `degraded` истинен, следующие циклы слушают эту пару, а не вход `tick`. `recover()` возвращает систему к входу. Без запасной пары каждый плохой цикл может снова вызвать panic.
 
 ### 4.3 Event Model (модель событий)
 
@@ -537,11 +564,11 @@ flux = FluxVar(value=0.0, on_trauma=escalate_trauma)
 | Концепция | Ось-источник | Механизм вывода |
 |---|---|---|
 | Gradient of Truth | Value (NoisyFloat) | `gradient_of_truth()` = confidence × f(SNR) |
-| FlowingTrit | State (FluxVar) | `FluxVar[Trit]` с непрерывным вектором перехода |
+| FlowingTrit | State (FluxVar) | непрерывный float между полюсами `-1`, `0`, `+1`; `-0.5` допустим |
 | Continuous Becoming | State (FluxVar) | вычисление = поток, а не вызов |
 | NoisyFlow | State × Value | `FluxVar[NoisyFloat]` |
-| Polyphonic Identity | Survival | множество `identity_hash` на сущность |
-| Deadname Erasure | Survival | атомарная ротация всех ссылок |
+| Polyphonic Identity | Survival | `PolyphonicIdentity`: маски; `in_group` не называет роль |
+| Deadname Erasure | Survival | `erase` / `rotate_all` внутри книги, не внутри panic |
 | Consent-First | Survival | этика деструктивных операций |
 
 Критерий: если новая концепция не выводится из трёх осей, она либо избыточна, либо это повод пересмотреть базис.
@@ -571,28 +598,29 @@ flux = FluxVar(value=0.0, on_trauma=escalate_trauma)
 
 | Компонент | Статус | Язык |
 |---|---|---|
-| `FluxVar<T>` | прототип | Python |
-| `NoisyFloat` | прототип | Python |
-| `SurvivalState` | прототип | Python |
-| Оператор `~>` | не реализован | LUMEN (планируется) |
-| Связное взаимодействие трёх осей | не реализовано | — |
+| `FluxVar<T>`, `flow()`, `classify_jump` | Python-библиотека | Python |
+| `NoisyFloat`, `weighted_mean` | Python-библиотека | Python |
+| `FlowingTrit` | Python-библиотека | Python |
+| `SurvivalState` | Python-библиотека | Python |
+| `PolyphonicIdentity` (`erase`, `rotate_all`) | Python-библиотека | Python |
+| `TransfluxSystem` (оркестратор, запасной режим) | Python-библиотека | Python |
+| Синтетические сценарии | `tests/synthetic/`, графики `docs/figures/synthetic/` | Python |
+| Оператор `~>` / DSL / LUMEN | отложен | — |
+| Rust, нейроморфное железо, бенчмарки, обёртки ML | отложены | — |
 
 ### 7.2 Дорожная карта
 
-**Ближайшие шаги (Core):**
+**Где мы (октябрь 2026).** Python-библиотека — носитель парадигмы (DR-019). Синтетические сценарии прогоняют три оси вместе. Другие стеки не выбираются.
 
-1. **TRANSFLUX Runtime v0.1** — один исполняемый модуль, где три оси реально связаны и демонстрируют emergent-поведение.
-2. **NoisyFloat как отдельная библиотека** — pip-пакет с тестами, документацией и примерами для научных вычислений.
+**Если углублять ту же библиотеку:** `scope` пока только метка; `erase` не видит хеши вне своей книги; `comfort` само не движется; `NoisyFlow` не выделен в тип; `weighted_mean` предполагает независимость измерений. Подробности — в [ROADMAP.md](../ROADMAP.md).
 
-**Среднесрочные (расширения):**
+**Отложено:**
 
-3. Mapping примитивов TRANSFLUX на нейроморфное железо (Intel Hala Point, BrainChip Akida и др.) — требует инженерной валидации.
-4. Реализация ядра на Rust для performance-critical сценариев.
-5. Интеграция с PyTorch / TensorFlow (обёртки весов и активаций в FluxVar / NoisyFloat).
+DSL / LUMEN, Rust, бенчмарки, нейроморфное железо, обёртки PyTorch / TensorFlow. Если библиотеку сочтут достаточной проверкой, вероятное продолжение — эмбеддинг и микроконтроллеры; конкретный стек к тому моменту придётся выбирать заново.
 
-**Исследовательский бэклог (не Core):**
+**Исследовательский бэклог (далеко, не Core):**
 
-Следующие идеи зафиксированы как исследовательские без обязательства войти в ядро:
+Следующие идеи зафиксированы без обязательства войти в ядро и без места в ближайшей работе:
 
 | Идея | К какой оси | Гипотеза |
 |---|---|---|
@@ -608,22 +636,28 @@ flux = FluxVar(value=0.0, on_trauma=escalate_trauma)
 
 ---
 
-## 8. Открытые вопросы
+## 8. Решения и отложенные вопросы
 
-### 8.1 Формализм ядра
+Журнал решений — в `docs/TRANSFLUX_Open_Questions.md`. Кратко:
 
-- Нужен ли в `FluxVar` явный слой `constraints` (политика допустимых состояний / инварианты runtime)? В некоторых черновиках состояние записывается как `(value, velocity, history, constraints)`.
-- Определение `Trit` для `FlowingTrit`: строго `{-1, 0, +1}` или расширенная семантика?
-- Стратегия propagation of confidence: `min` (текущая, консервативная) vs мультипликативная (`c₁ × c₂`) vs байесовская.
+### 8.1 Формализм ядра — решено (октябрь 2026)
 
-### 8.2 Валидация
+- **Confidence.** Остаётся `min` (слабое звено). Мультипликативная и байесовская стратегии не входят в библиотеку, пока не понадобятся (DR-016).
+- **Constraints.** В `FluxVar` их нет. Допустимость значения контролирует программист. Библиотека не спасает от неверного `value` (DR-017).
+- **FlowingTrit.** Состояние — float. Полюса `-1`, `0`, `+1` — ориентиры, не закрытое множество. `-0.5` допустим. Клампа нет (DR-018).
 
-- Mapping примитивов TRANSFLUX на инструкции нейроморфного железа — требуется один конкретный proof-of-concept.
-- Бенчмарки TRANSFLUX-подхода vs классического на edge-устройствах — без реальных замеров никакие количественные утверждения о производительности не могут считаться обоснованными.
+### 8.2 Носитель реализации — решено
 
-### 8.3 Документация
+- Носитель — Python-библиотека: примитивы, `weighted_mean`, `classify_jump`, `PolyphonicIdentity`, оркестратор с запасным режимом.
+- Синтетические сценарии уже гоняют этот код. DSL / LUMEN и Rust отложены. Вероятный горизонт после этого — эмбеддинг и микроконтроллеры (DR-019).
 
-- ~~Страница «TRANSFLUX и смежные парадигмы»~~ — **реализовано:** см. `docs/TRANSFLUX_Related_Paradigms.md`. Расширение (новые парадигмы для сравнения) — по мере необходимости.
+### 8.3 Валидация и дальний бэклог — отложены
+
+Синтетическая проверка есть. Нейроморфный proof-of-concept, бенчмарки, интеграция с фреймворками машинного обучения и исследовательские идеи §7.2 по-прежнему не в работе.
+
+### 8.4 Документация
+
+- ~~Страница «TRANSFLUX и смежные парадигмы»~~ — **реализовано:** см. `docs/TRANSFLUX_Related_Paradigms.md`.
 - Унификация API между спецификацией (`FluxVar`) и экспериментальным прототипом (`Flow` в `research/notes/TRANSFLUX.py`). Каноническим является `FluxVar`; `Flow` — ранний эксперимент с альтернативной физической моделью (пружинная динамика с target, см. DR-008).
 
 ---
@@ -638,7 +672,7 @@ flux = FluxVar(value=0.0, on_trauma=escalate_trauma)
 | `SurvivalState` | Модель выживания: threat_level + panic_threshold + identity + scope | Каноническое имя |
 | `momentum` | Образ инерции из манифестных текстов | В коде: velocity + acceleration |
 | `dispersion` | Синоним uncertainty в ранних текстах | Каноническое: uncertainty |
-| `FlowingTrit` | `FluxVar[Trit]` с непрерывным вектором | Производная концепция |
+| `FlowingTrit` | Непрерывный трит: float, полюса `-1`, `0`, `+1` | `-0.5` допустим; диапазон не клампится |
 | `Gradient of Truth` | Степень истинности: f(confidence, SNR) | Производная от NoisyFloat |
 | `Polyphonic Identity` | Множество идентификаторов на одну сущность | Производная от SurvivalState |
 | `Deadname Erasure` | Атомарная ротация всех ссылок на идентификатор | Производная от SurvivalState |

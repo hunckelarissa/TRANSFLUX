@@ -1,32 +1,47 @@
 # TRANSFLUX Roadmap
 
-> Вынесено из спецификации (§7). Источник истины по статусу компонентов — [docs/TRANSFLUX_Specification_v0.3.md](docs/TRANSFLUX_Specification_v0.3.md).
+> Статус на октябрь 2026. Формальные решения — [docs/TRANSFLUX_Open_Questions.md](docs/TRANSFLUX_Open_Questions.md) и DR-016…DR-023. Спецификация — [docs/TRANSFLUX_Specification_v0.3.md](docs/TRANSFLUX_Specification_v0.3.md).
 
-## Текущий статус реализации
+## Уже в Python-библиотеке
 
-| Компонент | Статус | Язык |
-|---|---|---|
-| `FluxVar<T>` | референсная реализация в `src/transflux/` | Python |
-| `NoisyFloat` | референсная реализация в `src/transflux/` | Python |
-| `SurvivalState` | референсная реализация в `src/transflux/` | Python |
-| `TransfluxSystem` (orchestrator) | референсная реализация в `src/transflux/` | Python |
-| Тесты INV / OP / CP | реализованы в `tests/` | Python (pytest) |
-| Оператор `~>` | не реализован | LUMEN (планируется) |
+Носитель парадигмы — пакет `src/transflux/`.
 
-## Ближайшие шаги (Core)
+| Компонент | Что делает |
+|---|---|
+| `FluxVar`, `flow()` | состояние как русло; `flow` — Python-форма оператора `~>` |
+| `NoisyFloat` | арифметика с переносом σ; confidence через `min` |
+| `weighted_mean` | среднее независимых измерений, вес `1/σ²` |
+| `FlowingTrit` | непрерывный трит; `-0.5` хранится как есть |
+| `classify_jump` | `calm` / `alone` / `shared`; confidence не меняет |
+| `SurvivalState` | угроза, panic, смена своего `identity_hash` |
+| `PolyphonicIdentity` | несколько масок; `erase` и `rotate_all` внутри одной книги |
+| `TransfluxSystem` | цикл трёх осей, `peak_threat`, запасной режим `degraded` |
+| Синтетические сценарии | `tests/synthetic/`, графики в `docs/figures/synthetic/` |
 
-1. **TRANSFLUX Runtime v0.1** — один исполняемый модуль, где три оси реально связаны и демонстрируют emergent-поведение (базовый цикл уже доступен как `TransfluxSystem.tick()`).
-2. **NoisyFloat как отдельная библиотека** — pip-пакет с тестами, документацией и примерами для научных вычислений.
+## Ближайшее, если углублять библиотеку
 
-## Среднесрочные (расширения)
+Это разрывы между сценариями и кодом. Часть поведения специально оставлена вызывающему коду (DR-017, DR-021, DR-022, DR-023).
 
-3. Mapping примитивов TRANSFLUX на нейроморфное железо (Intel Hala Point, BrainChip Akida и др.) — требует инженерной валидации.
-4. Реализация ядра на Rust для performance-critical сценариев.
-5. Интеграция с PyTorch / TensorFlow (обёртки весов и активаций в FluxVar / NoisyFloat).
+- `scope` (`local` / `process` / `system`) только хранится: panic при любом масштабе делает одно и то же.
+- `erase` видит ссылки внутри одной `PolyphonicIdentity`. Хеш вне книги не стирается.
+- `comfort` само не реагирует на травму и на спокойный ход.
+- `NoisyFlow` — договорённость `FluxVar[NoisyFloat]`, отдельного типа нет.
+- `weighted_mean` предполагает независимость измерений.
+- Запас прочности от uncertainty и таймер «давно не было сигнала» не выделены в отдельные функции: это вход `tick` и `threat_delta`.
 
-## Исследовательский бэклог (не Core)
+## Отложено
 
-Идеи зафиксированы как исследовательские, без обязательства войти в ядро:
+Пока проверка концепции — синтетические сценарии, не другое железо:
+
+- оператор `~>` как синтаксис языка, DSL и вариант для LUMEN;
+- реализация на Rust;
+- бенчмарки, нейроморфные чипы, обёртки PyTorch / TensorFlow.
+
+Если библиотеку признают достаточной проверкой, вероятное продолжение — эмбеддинг и микроконтроллеры. Стек к тому моменту выбирается заново.
+
+## Исследовательский бэклог (далеко, не Core)
+
+Идеи записаны, в работу не входят:
 
 | Идея | К какой оси | Гипотеза |
 |---|---|---|
@@ -39,7 +54,3 @@
 | Euphoria-Driven Optimization | Value | Максимизация comfort вместо минимизации loss |
 | Algebra of Change | State | Операции над изменениями, композиция трансформаций |
 | Time-Native Programming | State | Время и причинность как first-class |
-
-## Открытые вопросы
-
-См. §8 спецификации: формализм ядра (constraints, Trit, стратегия propagation of confidence), валидация (нейроморфный PoC, бенчмарки).

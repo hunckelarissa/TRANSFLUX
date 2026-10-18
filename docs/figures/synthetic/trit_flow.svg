@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="820" height="236" viewBox="0 0 820 236">
+<rect width="100%" height="100%" fill="#fbfcfd"/>
+<text x="72" y="26" font-family="Segoe UI, sans-serif" font-size="16" fill="#1f2933">Трит: промежуточные значения сохраняются</text>
+<text x="72" y="54" font-family="Segoe UI, sans-serif" font-size="13" fill="#1f2933">от «нет» к «да» через половину</text>
+<line x1="72" y1="192.0" x2="796" y2="192.0" stroke="#e4e7eb"/>
+<text x="64" y="196.0" text-anchor="end" font-family="Segoe UI, sans-serif" font-size="11" fill="#52606d">-1.24</text>
+<line x1="72" y1="149.3" x2="796" y2="149.3" stroke="#e4e7eb"/>
+<text x="64" y="153.3" text-anchor="end" font-family="Segoe UI, sans-serif" font-size="11" fill="#52606d">-0.41</text>
+<line x1="72" y1="106.7" x2="796" y2="106.7" stroke="#e4e7eb"/>
+<text x="64" y="110.7" text-anchor="end" font-family="Segoe UI, sans-serif" font-size="11" fill="#52606d">0.41</text>
+<line x1="72" y1="64.0" x2="796" y2="64.0" stroke="#e4e7eb"/>
+<text x="64" y="68.0" text-anchor="end" font-family="Segoe UI, sans-serif" font-size="11" fill="#52606d">1.24</text>
+<line x1="72" y1="179.6" x2="796" y2="179.6" stroke="#52606d" stroke-dasharray="5 4"/>
+<text x="76" y="175.6" font-family="Segoe UI, sans-serif" font-size="11" fill="#52606d">нет</text>
+<line x1="72" y1="128.0" x2="796" y2="128.0" stroke="#52606d" stroke-dasharray="5 4"/>
+<text x="76" y="124.0" font-family="Segoe UI, sans-serif" font-size="11" fill="#52606d">порог</text>
+<line x1="72" y1="76.4" x2="796" y2="76.4" stroke="#2f6f4e" stroke-dasharray="5 4"/>
+<text x="76" y="72.4" font-family="Segoe UI, sans-serif" font-size="11" fill="#2f6f4e">да</text>
+<rect x="710" y="44" width="10" height="10" fill="#1d4e89"/>
+<text x="724" y="53" font-family="Segoe UI, sans-serif" font-size="11" fill="#1f2933">значение</text>
+<polyline fill="none" stroke="#1d4e89" stroke-width="2" points="72.0,179.6 216.8,153.8 361.6,140.9 506.4,128.0 651.2,102.2 796.0,76.4"/>
+<text x="434.0" y="220" text-anchor="middle" font-family="Segoe UI, sans-serif" font-size="12" fill="#52606d">шаг</text>
+</svg>
