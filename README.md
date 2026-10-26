@@ -1,55 +1,60 @@
+> **Language:** English · [Русский](README.ru.md)
+
 # TRANSFLUX
 
-**Версия спецификации: v0.3 (август 2026) — черновик.**
+**Package: 0.5.0 · Specification: draft (August 2026 revision).**
 
-Вычислительная парадигма **непрерывного становления**: состояние как поток, значение с неопределённостью, выживание под угрозой.
+A computational paradigm of **continuous becoming**: state as flow, value with uncertainty, survival under threat.
 
 ```
 TRANSFLUX = Flow(State) · Uncertainty(Value) · Adaptation(Survival)
 ```
 
-## Документация
+## Documentation
 
-| Документ | Назначение |
-|----------|------------|
-| [One-pager](docs/TRANSFLUX_One_Pager.md) | Обзор на одну страницу — начни здесь |
-| [Спецификация v0.3](docs/TRANSFLUX_Specification_v0.3.md) | Формальное ядро: примитивы, код, взаимодействие осей |
-| [Описание парадигмы](docs/TRANSFLUX_Paradigm.md) | Для разработчиков: аналогии, примеры, области применения |
-| [Манифест](docs/TRANSFLUX_Manifesto.md) | Позиция и призыв: голос парадигмы |
-| [Сценарии применения](docs/TRANSFLUX_Use_Cases.md) | Четыре проработанных use case |
-| [Смежные парадигмы](docs/TRANSFLUX_Related_Paradigms.md) | Сравнение с fuzzy logic, reactive streams, probabilistic programming и др. |
-| [Design Rationale](docs/TRANSFLUX_Design_Rationale.md) | Обоснование ключевых проектных решений |
-| [Формальные инварианты](docs/TRANSFLUX_Formal_Invariants.md) | Гарантии, свойства, тестовые спецификации |
-| [Anti-patterns](docs/TRANSFLUX_Anti_Patterns.md) | Типичные ошибки: как НЕ надо использовать TRANSFLUX |
-| [Глоссарий](docs/TRANSFLUX_Glossary.md) | Термины, инварианты, DR — всё на одной странице |
-| [API Reference](docs/TRANSFLUX_API_Reference.md) | Компактный справочник по примитивам и callbacks |
-| [Архитектура](docs/TRANSFLUX_Architecture.md) | Обзор верхнего уровня: три оси и их взаимодействие |
-| [История](docs/TRANSFLUX_History.md) | Как и почему возник TRANSFLUX |
-| [Changelog](docs/CHANGELOG.md) | История изменений по версиям |
-| [Открытые вопросы](docs/TRANSFLUX_Open_Questions.md) | Принятые решения и то, что отложено |
+Every living document has a parallel English and Russian version. This file is the English default for Git. Russian twins use a `.ru.md` suffix at the repository root and live under `docs/ru/`. English documents live under `docs/en/`. The `research/` folder is a historical archive and is not translated.
 
-## Участие
+| Document | Purpose |
+|----------|---------|
+| [One-pager](docs/en/TRANSFLUX_One_Pager.md) | One-page overview — start here |
+| [Plain-language explanation](docs/en/TRANSFLUX_Simple_Explanation.md) | What TRANSFLUX is, without the jargon |
+| [Specification](docs/en/TRANSFLUX_Specification.md) | Formal core: primitives, code, how the axes interact |
+| [Paradigm](docs/en/TRANSFLUX_Paradigm.md) | For developers: analogies, examples, domains |
+| [Manifesto](docs/en/TRANSFLUX_Manifesto.md) | Position and voice of the paradigm |
+| [Use cases](docs/en/TRANSFLUX_Use_Cases.md) | Four worked examples |
+| [Related paradigms](docs/en/TRANSFLUX_Related_Paradigms.md) | Comparison with fuzzy logic, reactive streams, probabilistic programming, and others |
+| [Design rationale](docs/en/TRANSFLUX_Design_Rationale.md) | Why the key design decisions were made |
+| [Formal invariants](docs/en/TRANSFLUX_Formal_Invariants.md) | Guarantees, properties, test specifications |
+| [Anti-patterns](docs/en/TRANSFLUX_Anti_Patterns.md) | Typical mistakes: how not to use TRANSFLUX |
+| [Glossary](docs/en/TRANSFLUX_Glossary.md) | Terms, invariants, and design records on one page |
+| [API reference](docs/en/TRANSFLUX_API_Reference.md) | Compact reference for primitives and callbacks |
+| [Architecture](docs/en/TRANSFLUX_Architecture.md) | High-level view: three axes and their interaction |
+| [History](docs/en/TRANSFLUX_History.md) | How and why TRANSFLUX came to be |
+| [Changelog](docs/en/CHANGELOG.md) | Version-by-version change history |
+| [Decisions](docs/en/TRANSFLUX_Open_Questions.md) | Decisions already made, and what is deferred |
 
-См. [CONTRIBUTING.md](CONTRIBUTING.md).
+## Contributing
 
-## Структура репозитория
+See [CONTRIBUTING.md](CONTRIBUTING.md). A documentation change lands in both languages.
 
-- **`docs/`** — актуальная документация (источник истины).
-- **`src/transflux/`** — Python-библиотека примитивов и оркестратора.
-- **`tests/`** — тесты инвариантов и синтетические сценарии (`tests/synthetic/`).
-- **`docs/figures/synthetic/`** — графики этих сценариев.
-- **`research/main/`** — исторические версии (v0.1).
-- **`docs/TRANSFLUX_Specification_v0.2.md`** — предыдущая спецификация (v0.2).
-- **`research/notes/`** — заметки, диаграммы, ранние эксперименты.
+## Repository layout
 
-## Лицензия
+- **`docs/en/`** — current documentation in English.
+- **`docs/ru/`** — the same documents in Russian.
+- **`docs/figures/synthetic/`** — charts for the synthetic scenarios (shared; labels follow the test text).
+- **`src/transflux/`** — the Python library: primitives and the orchestrator.
+- **`tests/`** — invariant tests and synthetic scenarios (`tests/synthetic/`).
+- **`research/main/`** — historical versions (including early specs). Not part of the bilingual set.
+- **`research/notes/`** — notes, diagrams, early experiments. Not translated.
 
-Apache 2.0 — см. [LICENSE](LICENSE).
+## License
 
-## Статус
+Apache 2.0 — see [LICENSE](LICENSE).
 
-Черновик / в разработке, октябрь 2026. Носитель парадигмы — Python-библиотека в `src/transflux/`: три оси, `FlowingTrit`, `weighted_mean`, `classify_jump`, `PolyphonicIdentity`, оркестратор с запасным режимом. Концепция прогнана на синтетических сценариях. API ещё не обещает стабильность. Дорожная карта — [ROADMAP.md](ROADMAP.md), журнал решений — [docs/TRANSFLUX_Open_Questions.md](docs/TRANSFLUX_Open_Questions.md).
+## Status
+
+Draft / in development, October 2026. The carrier of the paradigm is the Python library in `src/transflux/`: the three axes, `FlowingTrit`, `weighted_mean`, `classify_jump`, `PolyphonicIdentity`, and an orchestrator with a backup mode. The concept has been run through synthetic scenarios. The API does not yet promise stability. Roadmap: [ROADMAP.md](ROADMAP.md). Decision journal: [docs/en/TRANSFLUX_Open_Questions.md](docs/en/TRANSFLUX_Open_Questions.md).
 
 ---
 
-*TRANSFLUX — эпистемология вычислений, которую можно воплотить в любом языке или стеке.*
+*TRANSFLUX is an epistemology of computation that can be embodied in any language or stack.*

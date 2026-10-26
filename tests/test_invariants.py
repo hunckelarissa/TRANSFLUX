@@ -1,4 +1,4 @@
-"""Тесты инвариантов типов (INV-*) из docs/TRANSFLUX_Formal_Invariants.md, §1."""
+"""Тесты инвариантов типов (INV-*) из docs/en/TRANSFLUX_Formal_Invariants.md, §1."""
 
 import math
 

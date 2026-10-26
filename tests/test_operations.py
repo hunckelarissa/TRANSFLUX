@@ -1,4 +1,4 @@
-"""Тесты свойств операций (OP-*) из docs/TRANSFLUX_Formal_Invariants.md, §2."""
+"""Тесты свойств операций (OP-*) из docs/en/TRANSFLUX_Formal_Invariants.md, §2."""
 
 import math
 

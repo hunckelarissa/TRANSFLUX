@@ -1,4 +1,4 @@
-"""Тесты свойств связанной системы (CP-*) из docs/TRANSFLUX_Formal_Invariants.md, §3."""
+"""Тесты свойств связанной системы (CP-*) из docs/en/TRANSFLUX_Formal_Invariants.md, §3."""
 
 from transflux import FluxVar, NoisyFloat, SurvivalState, TransfluxSystem
 

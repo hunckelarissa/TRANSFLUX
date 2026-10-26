@@ -1,56 +1,58 @@
+> **Language:** English · [Русский](ROADMAP.ru.md)
+
 # TRANSFLUX Roadmap
 
-> Статус на октябрь 2026. Формальные решения — [docs/TRANSFLUX_Open_Questions.md](docs/TRANSFLUX_Open_Questions.md) и DR-016…DR-023. Спецификация — [docs/TRANSFLUX_Specification_v0.3.md](docs/TRANSFLUX_Specification_v0.3.md).
+> Status as of October 2026. The formal decisions are [docs/en/TRANSFLUX_Open_Questions.md](docs/en/TRANSFLUX_Open_Questions.md) and DR-016…DR-023. The specification is [docs/en/TRANSFLUX_Specification.md](docs/en/TRANSFLUX_Specification.md).
 
-## Уже в Python-библиотеке
+## Already in the Python library
 
-Носитель парадигмы — пакет `src/transflux/`.
+The carrier of the paradigm is the package `src/transflux/`.
 
-| Компонент | Что делает |
+| Component | What it does |
 |---|---|
-| `FluxVar`, `flow()` | состояние как русло; `flow` — Python-форма оператора `~>` |
-| `NoisyFloat` | арифметика с переносом σ; confidence через `min` |
-| `weighted_mean` | среднее независимых измерений, вес `1/σ²` |
-| `FlowingTrit` | непрерывный трит; `-0.5` хранится как есть |
-| `classify_jump` | `calm` / `alone` / `shared`; confidence не меняет |
-| `SurvivalState` | угроза, panic, смена своего `identity_hash` |
-| `PolyphonicIdentity` | несколько масок; `erase` и `rotate_all` внутри одной книги |
-| `TransfluxSystem` | цикл трёх осей, `peak_threat`, запасной режим `degraded` |
-| Синтетические сценарии | `tests/synthetic/`, графики в `docs/figures/synthetic/` |
+| `FluxVar`, `flow()` | state as a channel; `flow` is the Python form of the `~>` operator |
+| `NoisyFloat` | arithmetic that carries σ; confidence through `min` |
+| `weighted_mean` | mean of independent readings, weight `1/σ²` |
+| `FlowingTrit` | a continuous trit; `-0.5` is stored as itself |
+| `classify_jump` | `calm` / `alone` / `shared`; does not change confidence |
+| `SurvivalState` | threat, panic, rotation of its own `identity_hash` |
+| `PolyphonicIdentity` | several masks; `erase` and `rotate_all` inside one book |
+| `TransfluxSystem` | one cycle of the three axes, `peak_threat`, backup mode `degraded` |
+| Synthetic scenarios | `tests/synthetic/`, charts in `docs/figures/synthetic/` |
 
-## Ближайшее, если углублять библиотеку
+## Nearest work, if the library is deepened
 
-Это разрывы между сценариями и кодом. Часть поведения специально оставлена вызывающему коду (DR-017, DR-021, DR-022, DR-023).
+These are gaps between the scenarios and the code. Some behavior is deliberately left to the caller (DR-017, DR-021, DR-022, DR-023).
 
-- `scope` (`local` / `process` / `system`) только хранится: panic при любом масштабе делает одно и то же.
-- `erase` видит ссылки внутри одной `PolyphonicIdentity`. Хеш вне книги не стирается.
-- `comfort` само не реагирует на травму и на спокойный ход.
-- `NoisyFlow` — договорённость `FluxVar[NoisyFloat]`, отдельного типа нет.
-- `weighted_mean` предполагает независимость измерений.
-- Запас прочности от uncertainty и таймер «давно не было сигнала» не выделены в отдельные функции: это вход `tick` и `threat_delta`.
+- `scope` (`local` / `process` / `system`) is only stored: panic does the same thing at every scale.
+- `erase` sees references inside one `PolyphonicIdentity`. A hash outside the book is not erased.
+- `comfort` does not itself react to trauma or to a calm run.
+- `NoisyFlow` is the convention `FluxVar[NoisyFloat]`; there is no separate type.
+- `weighted_mean` assumes the readings are independent.
+- An uncertainty safety margin and a "no signal for a while" timer are not separate functions: they are inputs to `tick` and `threat_delta`.
 
-## Отложено
+## Deferred
 
-Пока проверка концепции — синтетические сценарии, не другое железо:
+While the concept check is synthetic scenarios, not other hardware:
 
-- оператор `~>` как синтаксис языка, DSL и вариант для LUMEN;
-- реализация на Rust;
-- бенчмарки, нейроморфные чипы, обёртки PyTorch / TensorFlow.
+- the `~>` operator as language syntax, a DSL, and a LUMEN variant;
+- a Rust implementation;
+- benchmarks, neuromorphic chips, PyTorch / TensorFlow wrappers.
 
-Если библиотеку признают достаточной проверкой, вероятное продолжение — эмбеддинг и микроконтроллеры. Стек к тому моменту выбирается заново.
+If the library is accepted as a sufficient check, the likely next horizon is embedding and microcontrollers. The stack for that moment is chosen then, not from today's list.
 
-## Исследовательский бэклог (далеко, не Core)
+## Research backlog (far, not Core)
 
-Идеи записаны, в работу не входят:
+The ideas are written down. They are not in the current work:
 
-| Идея | К какой оси | Гипотеза |
+| Idea | Axis | Hypothesis |
 |---|---|---|
-| Grief-Driven GC | State | GC как протокол утраты с историей ссылок |
-| Dysphoric Compiler | Value | Диагностика «дискомфорта» в коде вместо сухих ошибок |
-| Chosen Family Topology | State | Граф зависимостей как отношения с историей и доверием |
-| Body-Budget Scheduler | State | Планировщик с моделью «энергии» и «усталости» |
-| Liminal Type Inference | Value | Промежуточные типы как валидные состояния |
-| Scar Memory | Survival | Усиленные проверки в местах прошлых сбоев |
-| Euphoria-Driven Optimization | Value | Максимизация comfort вместо минимизации loss |
-| Algebra of Change | State | Операции над изменениями, композиция трансформаций |
-| Time-Native Programming | State | Время и причинность как first-class |
+| Grief-Driven GC | State | GC as a protocol of loss, with a history of references |
+| Dysphoric Compiler | Value | diagnosing "discomfort" in code instead of dry errors |
+| Chosen Family Topology | State | a dependency graph as relationships with history and trust |
+| Body-Budget Scheduler | State | a scheduler with a model of "energy" and "fatigue" |
+| Liminal Type Inference | Value | intermediate types as valid states |
+| Scar Memory | Survival | stronger checks in places where failures already happened |
+| Euphoria-Driven Optimization | Value | maximizing comfort instead of minimizing loss |
+| Algebra of Change | State | operations on changes, composition of transformations |
+| Time-Native Programming | State | time and causality as first-class |

@@ -3,7 +3,8 @@
 Значение как распределение: центр, неуверенность и степень доверия.
 Шум — не ошибка. Шум — сигнал о природе знания.
 
-Спецификация: docs/TRANSFLUX_Specification_v0.3.md, §2.
+Спецификация: docs/en/TRANSFLUX_Specification.md, §2
+(русская пара: docs/ru/TRANSFLUX_Specification.md).
 """
 
 import math

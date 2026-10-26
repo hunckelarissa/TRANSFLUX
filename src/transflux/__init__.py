@@ -10,7 +10,8 @@ TRANSFLUX = Flow(State) · Uncertainty(Value) · Adaptation(Survival)
 FlowingTrit — непрерывный трит: полюса -1, 0, +1, промежуточные float допустимы.
 TransfluxSystem — оркестратор, который связывает три оси в одном цикле.
 
-Источник истины: docs/TRANSFLUX_Specification_v0.3.md
+Источник истины: docs/en/TRANSFLUX_Specification.md
+и docs/ru/TRANSFLUX_Specification.md
 """
 
 from .flowing_trit import FlowingTrit
@@ -20,7 +21,7 @@ from .noisy_float import NoisyFloat, weighted_mean
 from .survival import SurvivalState
 from .system import TransfluxSystem
 
-__version__ = "0.3.0"
+__version__ = "0.5.0"
 
 __all__ = [
     "FlowingTrit",

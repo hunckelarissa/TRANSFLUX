@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "transflux"
-version = "0.3.0"
+version = "0.5.0"
 description = "TRANSFLUX: Python-библиотека парадигмы непрерывного становления"
 readme = "README.md"
 license = { file = "LICENSE" }

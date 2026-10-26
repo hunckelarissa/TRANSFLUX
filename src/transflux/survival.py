@@ -3,7 +3,8 @@
 Модель выживания: непрерывная угроза → дискретное перерождение.
 Приоритет: выживание > целостность данных > скорость.
 
-Спецификация: docs/TRANSFLUX_Specification_v0.3.md, §3.
+Спецификация: docs/en/TRANSFLUX_Specification.md, §3
+(русская пара: docs/ru/TRANSFLUX_Specification.md).
 """
 
 import hashlib
