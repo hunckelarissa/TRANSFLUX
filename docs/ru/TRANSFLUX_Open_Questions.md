@@ -2,7 +2,7 @@
 
 # TRANSFLUX: решения и то, что отложено
 
-Журнал на октябрь 2026. Обоснования — DR-016…DR-023 в `TRANSFLUX_Design_Rationale.md`.
+Журнал на октябрь 2026. Обоснования — DR-016…DR-030 в `TRANSFLUX_Design_Rationale.md`.
 
 Открытых вопросов, которые мешают писать библиотеку, нет. Концепция прогнана на синтетических сценариях (`tests/synthetic/`, графики в `docs/figures/synthetic/`). Другие стеки по-прежнему отложены.
 
@@ -64,6 +64,14 @@ flux.flow(FlowingTrit(-0.5))
 - запасной режим оркестратора (DR-021);
 - `classify_jump` — `calm` / `alone` / `shared`, без правки confidence (DR-022);
 - `PolyphonicIdentity` — маски, `erase`, `rotate_all`; panic их не крутит, пока callback сам не попросит (DR-023).
+- `comfort` движется при trauma и на спокойном шаге (DR-024); нулевые ставки замораживают.
+- Scope-хуки panic после общего `on_panic` (DR-025).
+- Алиас `NoisyFlow`, `stale_threat`, `uncertainty_margin_threat` и опциональная проводка в `TransfluxSystem.tick`.
+- `IdentityLedger` — `erase` между книгами только для зарегистрированных (DR-026).
+- `weighted_mean(..., correlation=)` — скалярная попарная зависимость (DR-027).
+- `ScarMemory` — opt-in шрамы, усиливающие последующую чувствительность (DR-028).
+- `weighted_mean(..., covariance=)` — полный путь GLS (DR-029).
+- `PolyphonicIdentity.live` / `erase_live` и `ledger.erase(..., discovered=True)` — opt-in автопоиск живых книг (DR-030).
 
 ---
 

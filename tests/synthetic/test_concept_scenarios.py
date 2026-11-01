@@ -15,7 +15,10 @@ from charts import save_bars, save_lines
 from transflux import (
     FlowingTrit,
     FluxVar,
+    IdentityLedger,
     NoisyFloat,
+    PolyphonicIdentity,
+    ScarMemory,
     SurvivalState,
     TransfluxSystem,
     classify_jump,
@@ -48,8 +51,8 @@ def test_smooth_fever_does_not_panic():
 def test_glitch_is_trauma_but_value_is_kept():
     """Скачок 36.6 → 40.2 за час — сигнал травмы, не остановка.
 
-    Значение всё равно становится 40.2. Comfort сам не реагирует:
-    библиотека только ограничивает его в [-1, 1], если его задали снаружи.
+    Значение всё равно становится 40.2. Comfort при trauma сдвигается к −1
+    (стоимость по умолчанию 0.25).
     """
     traumas = []
     fever = FluxVar(value=36.6, trauma_threshold=1.0, comfort=0.0)
@@ -59,7 +62,7 @@ def test_glitch_is_trauma_but_value_is_kept():
 
     assert fever.value == pytest.approx(40.2)
     assert traumas == pytest.approx([3.6])
-    assert fever.comfort == 0.0
+    assert fever.comfort == pytest.approx(-0.25)
     assert fever.trajectory() == pytest.approx([36.6, 40.2])
 
 
@@ -309,7 +312,9 @@ def test_lone_spike_is_not_a_shared_cloud():
 
     assert kinds[3] == "alone"
     assert yard[4] == 180.0
-    assert traces["двор"].comfort == 0.0
+    before = traces["двор"].comfort
+    assert classify_jump(traces["двор"], [traces["север"], traces["юг"]]) == "calm"
+    assert traces["двор"].comfort == before
 
     trusted = weighted_mean([
         NoisyFloat(12.5, uncertainty=1.0, confidence=0.9),
@@ -420,6 +425,94 @@ def test_ward_switches_to_backup_after_panic():
         ],
         xlabel="час",
     )
+
+
+def test_ledger_erases_shared_name_in_two_circuits():
+    """Одно мёртвое имя в редакции и в поле.
+
+    Обычный erase ledger видит только зарегистрированные книги.
+    discovered=True (или erase_live) достаёт и незарегистрированную.
+    """
+    ledger = IdentityLedger()
+    desk = ledger.register("desk")
+    field = ledger.register("field")
+    shared = desk.add("byline")
+    field._slots["source"] = shared
+    hidden = PolyphonicIdentity()
+    hidden._slots["ghost"] = shared
+
+    new = ledger.erase(shared)
+    assert desk.present("byline") == new
+    assert field.present("source") == new
+    assert hidden.present("ghost") == shared
+
+    shared = desk.add("again")
+    hidden._slots["ghost"] = shared
+    wiped = ledger.erase(shared, discovered=True)
+    assert desk.present("again") == wiped
+    assert hidden.present("ghost") == wiped
+
+
+def test_correlated_plume_does_not_look_sharper_than_one_sensor():
+    """Два датчика смотрят в одно облако: ρ=1, σ не сжимается как у независимых."""
+    left = NoisyFloat(40.0, uncertainty=4.0, confidence=0.8)
+    right = NoisyFloat(42.0, uncertainty=4.0, confidence=0.8)
+    independent = weighted_mean([left, right], correlation=0.0)
+    plume = weighted_mean([left, right], correlation=1.0)
+    assert independent.uncertainty < plume.uncertainty
+    assert plume.uncertainty == pytest.approx(4.0)
+    assert plume.confidence == pytest.approx(0.8)
+
+
+def test_asymmetric_covariance_gls_for_uneven_plume():
+    """Сеть датчиков с разной σ и известной Σ: GLS не совпадает с независимым средним."""
+    near = NoisyFloat(40.0, uncertainty=1.0, confidence=0.9)
+    far = NoisyFloat(48.0, uncertainty=3.0, confidence=0.7)
+    independent = weighted_mean([near, far], correlation=0.0)
+    # corr ≈ 0.4 → cov12 = 0.4 * 1 * 3 = 1.2
+    cov = [
+        [1.0, 1.2],
+        [1.2, 9.0],
+    ]
+    gls = weighted_mean([near, far], covariance=cov)
+    assert gls.uncertainty > independent.uncertainty
+    assert gls.value != pytest.approx(independent.value)
+    assert gls.confidence < independent.confidence
+
+
+def test_silent_link_raises_threat_without_a_bad_value():
+    """Канал молчит дольше timeout — угроза растёт, даже если последнее значение спокойное."""
+    system = TransfluxSystem(
+        state=FluxVar(value=1.0, trauma_threshold=100.0),
+        survival=SurvivalState(panic_threshold=0.9, decay_rate=0.0),
+        flow_sensitivity=0.0,
+        uncertainty_sensitivity=0.0,
+        signal_timeout=3.0,
+        stale_sensitivity=0.4,
+    )
+    quiet = NoisyFloat(1.0, uncertainty=0.1, confidence=1.0)
+    assert system.tick(1.0, quiet, signal_age=1.0) is False
+    assert system.survival.threat_level == 0.0
+    assert system.tick(1.0, quiet, signal_age=6.0) is False
+    assert system.survival.threat_level == pytest.approx(0.4)
+
+
+def test_scar_makes_the_same_glitch_more_expensive_next_time():
+    """После panic в палате тот же шум поднимает угрозу сильнее — шрам на месте."""
+    scars = ScarMemory(boost_factor=1.0)
+    site = "ward.fever"
+    base = 0.5
+
+    first = SurvivalState(panic_threshold=0.9, decay_rate=0.0)
+    noisy = NoisyFloat(40.0, uncertainty=1.0, confidence=0.2)
+    first.update_from_uncertainty(noisy, sensitivity=scars.amplify(site, base))
+    level_before_scar = first.threat_level
+    assert first.update(1.0) is True
+    scars.mark(site, 0.5)
+
+    second = SurvivalState(panic_threshold=0.9, decay_rate=0.0)
+    second.update_from_uncertainty(noisy, sensitivity=scars.amplify(site, base))
+    assert second.threat_level > level_before_scar
 
 
 def _ward(trauma_threshold, decay_rate):

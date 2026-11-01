@@ -8,6 +8,8 @@ TRANSFLUX = Flow(State) · Uncertainty(Value) · Adaptation(Survival)
 - SurvivalState  — Survival Model (что делать под угрозой?)
 
 FlowingTrit — непрерывный трит: полюса -1, 0, +1, промежуточные float допустимы.
+NoisyFlow — алиас FluxVar[NoisyFloat] (пересечение осей I и II).
+ScarMemory — шрамы мест, где уже был сбой (производная Survival).
 TransfluxSystem — оркестратор, который связывает три оси в одном цикле.
 
 Источник истины: docs/en/TRANSFLUX_Specification.md
@@ -16,10 +18,13 @@ TransfluxSystem — оркестратор, который связывает т
 
 from .flowing_trit import FlowingTrit
 from .flux_var import FluxVar, classify_jump
-from .identity import PolyphonicIdentity
+from .identity import IdentityLedger, PolyphonicIdentity
 from .noisy_float import NoisyFloat, weighted_mean
-from .survival import SurvivalState
+from .scar import ScarMemory
+from .survival import SurvivalState, stale_threat, uncertainty_margin_threat
 from .system import TransfluxSystem
+
+NoisyFlow = FluxVar[NoisyFloat]
 
 __version__ = "0.5.0"
 
@@ -27,10 +32,15 @@ __all__ = [
     "FlowingTrit",
     "FluxVar",
     "classify_jump",
+    "IdentityLedger",
     "PolyphonicIdentity",
     "NoisyFloat",
+    "NoisyFlow",
+    "ScarMemory",
     "weighted_mean",
     "SurvivalState",
+    "stale_threat",
+    "uncertainty_margin_threat",
     "TransfluxSystem",
     "__version__",
 ]

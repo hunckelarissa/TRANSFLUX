@@ -26,6 +26,8 @@ class FluxVar(Generic[T]):
         default_factory=lambda: deque(maxlen=32)
     )
     trauma_threshold: float = 10.0
+    trauma_comfort_cost: float = 0.25  # сдвиг comfort к −1 при trauma
+    calm_comfort_gain: float = 0.02    # сдвиг comfort к +1 при спокойном шаге
     on_trauma: Optional[Callable] = field(default=None, repr=False)
     # Слоя constraints нет намеренно: допустимость value задаёт вызывающий код.
 
@@ -36,9 +38,13 @@ class FluxVar(Generic[T]):
 
         delta = float(new_value) - float(self.value)
         new_velocity = delta / dt
+        traumatized = abs(new_velocity) > self.trauma_threshold
 
-        if abs(new_velocity) > self.trauma_threshold:
+        if traumatized:
             self._handle_trauma(new_velocity)
+            self.comfort -= self.trauma_comfort_cost
+        else:
+            self.comfort += self.calm_comfort_gain
 
         self.acceleration = (new_velocity - self.velocity) / dt
         self.velocity = new_velocity

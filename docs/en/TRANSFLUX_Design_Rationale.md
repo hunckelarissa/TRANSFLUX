@@ -332,3 +332,73 @@ By October 2026 that run exists: the synthetic scenarios in `tests/synthetic/`. 
 **Decision.** The book of masks is a separate object, `PolyphonicIdentity`. `erase` replaces one hash everywhere inside the book. `rotate_all` does this for every mask. `SurvivalState` does not hold them. The link to panic is only a callback that itself calls `rotate_all`.
 
 **Argument.** Erasing a name is irreversible. Consent-First already requires that such an action be an explicit policy. A book that was not passed into the callback keeps its hashes: an alarm in one circuit does not burn out the neighboring one.
+
+---
+
+## DR-024. Comfort reacts to trauma and to a calm step
+
+**Context.** `comfort` lived on `FluxVar` but only clamped into `[-1, +1]`. Synthetic scenarios had to set it from outside, and a trauma left the field untouched. The roadmap named this as a gap between the idea of well-being and the code.
+
+**Decision.** On trauma, comfort decreases by `trauma_comfort_cost` (default `0.25`). On a calm update it increases by `calm_comfort_gain` (default `0.02`). The result is clamped. Rates of `0` freeze the field as before.
+
+**Argument.** The scalar from DR-004 is useful only if it moves with the channel. The cost of trauma and the gain of calm are parameters of the caller, not a hidden policy of allowed values (DR-017 still stands). Zero rates keep old tests and old mental models intact.
+
+---
+
+## DR-025. Scope selects an optional panic hook
+
+**Context.** `scope` was stored and described in the specification (`local` / `process` / `system`), but `_panic` did the same thing at every scale: rotate its own hash and call `on_panic`. Real effects (reset connections, rotate keys) are application concerns and must stay Consent-First.
+
+**Decision.** After the common `on_panic`, `_panic` calls at most one of `on_panic_local`, `on_panic_process`, `on_panic_system`, matching `scope`. Missing hooks are silence. The library still does not destroy data and does not rotate a `PolyphonicIdentity` by itself (DR-023).
+
+**Argument.** Differentiating scales without an opt-in policy would invent irreversible actions. A labeled hook lets the scenario name what “process” or “system” means, while an unset hook keeps panic local to the identity hash.
+
+---
+
+## DR-026. Cross-book erase only through a registered ledger
+
+**Context.** `PolyphonicIdentity.erase` sees one book. The same dead name can sit in a desk book and a field book. Asking every book by hand is easy to miss; putting a global eraser into `SurvivalState` would burn books that never consented.
+
+**Decision.** `IdentityLedger` holds named books that were registered explicitly. Its `erase` rewrites the old hash in every registered book that holds it, with one shared new hash. A book that was not registered is invisible. Unknown hash → `KeyError`, nothing changes.
+
+**Argument.** Consent-First again: visibility is membership in the ledger, not “every object in the process.” One new hash keeps aliases coherent across circuits that deliberately share a name.
+
+---
+
+## DR-027. Correlation is an explicit argument of weighted_mean
+
+**Context.** Inverse-variance mean assumes independence. Sensors that look at the same plume are correlated; treating them as independent shrinks σ too far and overstates confidence.
+
+**Decision.** `weighted_mean(..., correlation=ρ)` with `ρ ∈ [0, 1]`. Value weights stay `1/σ²`. Uncertainty becomes `σ_indep · √(1+(n−1)ρ)`. Confidence blends the weighted mean toward `min` as `ρ` grows. `ρ = 0` is the old formula.
+
+**Argument.** One pairwise average is the default admission of dependence. When the caller already has a full matrix, DR-029 takes over.
+
+---
+
+## DR-028. Scar Memory is opt-in, outside SurvivalState
+
+**Context.** After a failure, the same place should be watched more carefully. Wiring that boost into `_panic` would harden every circuit forever, including ones that never asked for a scar.
+
+**Decision.** `ScarMemory` is a separate object. The caller marks a `site` (usually from `on_panic` or `on_trauma`) and later asks `amplify(site, base)` for a raised sensitivity. `fade` heals. Panic itself does not write scars.
+
+**Argument.** A scar is a policy of vigilance, not a law of rebirth. Consent-First keeps the mark explicit; the research idea "Scar Memory" becomes a checkable derived type without changing the panic phase transition.
+
+---
+
+## DR-029. Full covariance is an optional GLS path
+
+**Context.** Scalar `correlation` assumes one average pairwise ρ. Real sensor nets often already have a covariance matrix; forcing them through a single ρ discards structure.
+
+**Decision.** `weighted_mean(..., covariance=Σ)` computes the GLS mean: `μ = (1ᵀΣ⁻¹x)/(1ᵀΣ⁻¹1)`, `σ = 1/√(1ᵀΣ⁻¹1)`. The diagonal must match each reading's `σ²`. `correlation ≠ 0` and `covariance` together are rejected. Exact (`σ = 0`) readings reject `covariance` (singular). Confidence blends toward `min` using the average implied pairwise correlation from Σ.
+
+**Argument.** The scalar path stays the default. The matrix path is opt-in honesty for callers who already measure dependence. Pure Python GLS keeps the core free of a linear-algebra dependency.
+
+---
+
+## DR-030. Live discovery is opt-in at the erase call
+
+**Context.** Cross-book erase needed either registration (`IdentityLedger`) or asking every book by hand. Process-wide discovery without any register was refused earlier as a Consent-First risk: an erase could burn books that never joined a ledger.
+
+**Decision.** Every `PolyphonicIdentity` enters a weak live registry. `PolyphonicIdentity.live()` lists reachable books. `erase_live(old_hash)` and `IdentityLedger.erase(..., discovered=True)` rewrite the hash in every live book that holds it, with one shared new hash. Ordinary `ledger.erase` still sees only registered books. Dead objects drop out of the weak registry.
+
+**Argument.** Discovery is not silent: the caller must name `erase_live` or `discovered=True`. Registration remains the safe default. Weak refs avoid keeping books alive only for the registry.

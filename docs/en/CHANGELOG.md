@@ -8,6 +8,18 @@ Every notable change in the project is recorded here.
 
 ## Unreleased
 
+**Library deepening (nearest ROADMAP gaps).**
+
+- `FluxVar.comfort` moves on its own: trauma lowers it, a calm step raises it (`trauma_comfort_cost` / `calm_comfort_gain`, DR-024). Rates of `0` restore the old freeze.
+- `NoisyFlow` is exported as the alias `FluxVar[NoisyFloat]`; `NoisyFloat.__float__` returns the center so a channel can compute velocity.
+- `stale_threat` and `uncertainty_margin_threat` — pure helpers for “no signal for a while” and an σ safety margin. `TransfluxSystem.tick(..., signal_age=)` can apply them when `signal_timeout` / `uncertainty_limit` are set.
+- `SurvivalState`: optional `on_panic_local` / `on_panic_process` / `on_panic_system` after the common `on_panic` (DR-025). Without hooks, panic still only rotates its own hash.
+- `IdentityLedger`: register several mask books; `erase` rewrites one hash across every registered book with a single new hash. An unregistered book stays invisible (DR-026).
+- `weighted_mean(..., correlation=)`: pairwise correlation in `[0, 1]` inflates σ by `√(1+(n−1)ρ)` and blends confidence toward `min` (DR-027). `correlation=0` keeps the independent formula.
+- `ScarMemory`: named scars that amplify later sensitivity; panic does not mark them by itself (DR-028). Synthetic scenarios cover ledger erase, correlated plume, silent link, and scar boost.
+- `weighted_mean(..., covariance=)`: full n×n GLS mean; diagonal must match `σ²`; not combined with scalar `correlation` (DR-029).
+- Live book discovery: `PolyphonicIdentity.live()` / `erase_live()` via a weak registry; `IdentityLedger.erase(..., discovered=True)` reaches unregistered live books (DR-030). Default `erase` stays registration-only.
+
 ---
 
 ## v0.5 — October 2026

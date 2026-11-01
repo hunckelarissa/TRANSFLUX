@@ -252,7 +252,7 @@ uncertainty = 1 / √(Σ(1/σ_i²))
 confidence  = Σ(c_i / σ_i²) / Σ(1/σ_i²)
 ```
 
-Большое `σ` почти не двигает ни значение, ни confidence. Это сознательно не `min` (DR-020): иначе сбойный датчик запрещал бы итог, даже если его вес близок к нулю. Измерение с `σ = 0` забирает весь вес. Пустой список — ошибка. Формула предполагает независимость; коррелированные датчики она опишет слишком уверенно.
+Большое `σ` почти не двигает ни значение, ни confidence. Это сознательно не `min` (DR-020): иначе сбойный датчик запрещал бы итог, даже если его вес близок к нулю. Измерение с `σ = 0` забирает весь вес. Пустой список — ошибка. По умолчанию формула предполагает независимость. При зависимости датчиков передайте `correlation=ρ` (`ρ ∈ [0, 1]`): uncertainty раздувается на `√(1+(n−1)ρ)`, confidence тянется к `min` (DR-027). При известной матрице — `covariance=Σ` для GLS-среднего (DR-029).
 
 ### 2.4 Производные концепции
 
@@ -570,6 +570,7 @@ flux = FluxVar(value=0.0, on_trauma=escalate_trauma)
 | NoisyFlow | State × Value | `FluxVar[NoisyFloat]` |
 | Polyphonic Identity | Survival | `PolyphonicIdentity`: маски; `in_group` не называет роль |
 | Deadname Erasure | Survival | `erase` / `rotate_all` внутри книги, не внутри panic |
+| Scar Memory | Survival | `ScarMemory`: mark / amplify / fade; не внутри panic (DR-028) |
 | Consent-First | Survival | этика деструктивных операций |
 
 Критерий: если новая концепция не выводится из трёх осей, она либо избыточна, либо это повод пересмотреть базис.
@@ -600,20 +601,25 @@ flux = FluxVar(value=0.0, on_trauma=escalate_trauma)
 | Компонент | Статус | Язык |
 |---|---|---|
 | `FluxVar<T>`, `flow()`, `classify_jump` | Python-библиотека | Python |
-| `NoisyFloat`, `weighted_mean` | Python-библиотека | Python |
+| `NoisyFloat`, `weighted_mean`, алиас `NoisyFlow` | Python-библиотека | Python |
 | `FlowingTrit` | Python-библиотека | Python |
-| `SurvivalState` | Python-библиотека | Python |
+| `SurvivalState` (scope-хуки) | Python-библиотека | Python |
 | `PolyphonicIdentity` (`erase`, `rotate_all`) | Python-библиотека | Python |
-| `TransfluxSystem` (оркестратор, запасной режим) | Python-библиотека | Python |
+| `IdentityLedger` (`erase` между книгами) | Python-библиотека | Python |
+| `TransfluxSystem` (оркестратор, backup, stale/margin) | Python-библиотека | Python |
+| `stale_threat`, `uncertainty_margin_threat` | Python-библиотека | Python |
+| `weighted_mean(..., correlation= / covariance=)` | Python-библиотека | Python |
+| `PolyphonicIdentity.live` / `erase_live` | Python-библиотека | Python |
+| `ScarMemory` (`mark`, `amplify`, `fade`) | Python-библиотека | Python |
 | Синтетические сценарии | `tests/synthetic/`, графики `docs/figures/synthetic/` | Python |
 | Оператор `~>` / DSL / LUMEN | отложен | — |
 | Rust, нейроморфное железо, бенчмарки, обёртки ML | отложены | — |
 
 ### 7.2 Дорожная карта
 
-**Где мы (октябрь 2026).** Python-библиотека — носитель парадигмы (DR-019). Синтетические сценарии прогоняют три оси вместе. Другие стеки не выбираются.
+**Где мы (октябрь 2026).** Python-библиотека — носитель парадигмы (DR-019). Синтетические сценарии прогоняют три оси вместе. Другие стеки не выбираются. Comfort движется при trauma/calm (DR-024); scope выбирает опциональный хук panic (DR-025); стирание между книгами — через `IdentityLedger` (DR-026); у `weighted_mean` есть скалярная корреляция и полная ковариация (DR-027, DR-029); `ScarMemory` — opt-in тип бдительности (DR-028); автопоиск живых книг — opt-in на erase (DR-030).
 
-**Если углублять ту же библиотеку:** `scope` пока только метка; `erase` не видит хеши вне своей книги; `comfort` само не движется; `NoisyFlow` не выделен в тип; `weighted_mean` предполагает независимость измерений. Подробности — в [ROADMAP.md](../../ROADMAP.ru.md).
+**Если углублять ту же библиотеку:** остальные идеи бэклога — гипотезы; DSL и другие рантаймы отложены. Подробности — в [ROADMAP.md](../../ROADMAP.ru.md).
 
 **Отложено:**
 
@@ -630,7 +636,7 @@ DSL / LUMEN, Rust, бенчмарки, нейроморфное железо, о
 | Chosen Family Topology | State | Граф зависимостей как отношения с историей и доверием |
 | Body-Budget Scheduler | State | Планировщик с моделью «энергии» и «усталости» |
 | Liminal Type Inference | Value | Промежуточные типы как валидные состояния |
-| Scar Memory | Survival | Усиленные проверки в местах прошлых сбоев |
+| ~~Scar Memory~~ | Survival | **в библиотеке как `ScarMemory`** (DR-028) |
 | Euphoria-Driven Optimization | Value | Максимизация comfort вместо минимизации loss |
 | Algebra of Change | State | Операции над изменениями, композиция трансформаций |
 | Time-Native Programming | State | Время и причинность как first-class |

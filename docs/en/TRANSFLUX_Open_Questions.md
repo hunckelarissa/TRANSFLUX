@@ -2,7 +2,7 @@
 
 # TRANSFLUX: decisions, and what is deferred
 
-A journal as of October 2026. The reasons are DR-016…DR-023 in `TRANSFLUX_Design_Rationale.md`.
+A journal as of October 2026. The reasons are DR-016…DR-030 in `TRANSFLUX_Design_Rationale.md`.
 
 There are no open questions that block writing the library. The concept has been run through synthetic scenarios (`tests/synthetic/`, charts in `docs/figures/synthetic/`). Other stacks remain deferred.
 
@@ -64,6 +64,14 @@ The synthetic scenarios, and the code that grew out of them:
 - the orchestrator's backup mode (DR-021);
 - `classify_jump` — `calm` / `alone` / `shared`, without editing confidence (DR-022);
 - `PolyphonicIdentity` — masks, `erase`, `rotate_all`; panic does not rotate them until a callback asks (DR-023).
+- `comfort` moves on trauma and on a calm step (DR-024); rates of `0` freeze it.
+- Scope-specific panic hooks after the common `on_panic` (DR-025).
+- `NoisyFlow` alias, `stale_threat`, `uncertainty_margin_threat`, and optional wiring in `TransfluxSystem.tick`.
+- `IdentityLedger` — cross-book `erase` only for registered books (DR-026).
+- `weighted_mean(..., correlation=)` — scalar pairwise dependence (DR-027).
+- `ScarMemory` — opt-in scars that amplify later sensitivity (DR-028).
+- `weighted_mean(..., covariance=)` — full GLS path (DR-029).
+- `PolyphonicIdentity.live` / `erase_live` and `ledger.erase(..., discovered=True)` — opt-in live discovery (DR-030).
 
 ---
 

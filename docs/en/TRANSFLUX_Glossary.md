@@ -34,6 +34,8 @@ TRANSFLUX = Flow(State) · Uncertainty(Value) · Adaptation(Survival)
 | FlowingTrit | FluxVar | A continuous trit: a float, poles `-1`, `0`, `+1`; `-0.5` is allowed |
 | Continuous Becoming | FluxVar | Computation = a flow, not a call |
 | Polyphonic Identity | SurvivalState | `PolyphonicIdentity`: masks; `in_group` does not name the role |
+| Identity Ledger | SurvivalState | `IdentityLedger`: registered books; cross-book `erase` |
+| Scar Memory | SurvivalState | `ScarMemory`: mark / amplify / fade; not inside panic |
 | Deadname Erasure | SurvivalState | `erase` / `rotate_all`: the old hash does not remain in the book |
 | Consent-First | SurvivalState | Destructive operations require explicit consent |
 
@@ -134,6 +136,13 @@ TRANSFLUX = Flow(State) · Uncertainty(Value) · Adaptation(Survival)
 | DR-021 | Backup mode | Panic latches only if a backup pair was set in advance |
 | DR-022 | classify_jump | alone / shared / calm; does not change confidence |
 | DR-023 | Masks apart from panic | Names are erased only by an explicit call |
+| DR-024 | Comfort moves | Trauma lowers it, a calm step raises it |
+| DR-025 | Scope hooks | Optional panic hook selected by `scope` |
+| DR-026 | IdentityLedger | Cross-book erase only for registered books |
+| DR-027 | Correlated mean | `weighted_mean(..., correlation=ρ)` |
+| DR-028 | ScarMemory | Opt-in scars; panic does not mark them alone |
+| DR-029 | Full covariance | `weighted_mean(..., covariance=Σ)` GLS |
+| DR-030 | Live discovery | `live` / `erase_live` / `discovered=True` |
 
 ---
 

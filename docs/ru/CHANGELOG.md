@@ -8,6 +8,18 @@
 
 ## Unreleased
 
+**Углубление библиотеки (ближайшие пробелы ROADMAP).**
+
+- `FluxVar.comfort` движется сам: trauma снижает, спокойный шаг поднимает (`trauma_comfort_cost` / `calm_comfort_gain`, DR-024). Нулевые ставки возвращают прежнюю «заморозку».
+- `NoisyFlow` экспортируется как алиас `FluxVar[NoisyFloat]`; `NoisyFloat.__float__` отдаёт центр, чтобы русло считало velocity.
+- `stale_threat` и `uncertainty_margin_threat` — чистые хелперы «долго нет сигнала» и запаса по σ. `TransfluxSystem.tick(..., signal_age=)` применяет их, если заданы `signal_timeout` / `uncertainty_limit`.
+- `SurvivalState`: опциональные `on_panic_local` / `on_panic_process` / `on_panic_system` после общего `on_panic` (DR-025). Без хуков panic по-прежнему только ротирует свой хеш.
+- `IdentityLedger`: регистрация нескольких книг масок; `erase` переписывает один хеш во всех зарегистрированных книгах одним новым. Незарегистрированная книга невидима (DR-026).
+- `weighted_mean(..., correlation=)`: попарная корреляция в `[0, 1]` раздувает σ как `√(1+(n−1)ρ)` и тянет confidence к `min` (DR-027). `correlation=0` — прежняя независимая формула.
+- `ScarMemory`: именованные шрамы усиливают последующую чувствительность; panic сам их не ставит (DR-028). Синтетические сценарии: erase в ledger, коррелированное облако, молчащий канал, усиление шрамом.
+- `weighted_mean(..., covariance=)`: полное GLS-среднее по матрице n×n; диагональ = `σ²`; не вместе со скалярным `correlation` (DR-029).
+- Автопоиск книг: `PolyphonicIdentity.live()` / `erase_live()` через weak-реестр; `IdentityLedger.erase(..., discovered=True)` достаёт незарегистрированные живые книги (DR-030). Обычный `erase` по-прежнему только по регистрации.
+
 ---
 
 ## v0.5 — октябрь 2026

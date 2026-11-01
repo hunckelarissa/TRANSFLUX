@@ -252,7 +252,7 @@ uncertainty = 1 / √(Σ(1/σ_i²))
 confidence  = Σ(c_i / σ_i²) / Σ(1/σ_i²)
 ```
 
-A large `σ` barely moves either the value or the confidence. This is deliberately not `min` (DR-020): otherwise a faulty sensor would veto the result even when its weight is close to zero. A reading with `σ = 0` takes all the weight. An empty list is an error. The formula assumes independence; it would describe correlated sensors with too much confidence.
+A large `σ` barely moves either the value or the confidence. This is deliberately not `min` (DR-020): otherwise a faulty sensor would veto the result even when its weight is close to zero. A reading with `σ = 0` takes all the weight. An empty list is an error. By default the formula assumes independence. Pass `correlation=ρ` (`ρ ∈ [0, 1]`) when the sensors are dependent: uncertainty inflates by `√(1+(n−1)ρ)`, and confidence blends toward `min` (DR-027). Pass `covariance=Σ` for a full GLS mean when the matrix is known (DR-029).
 
 ### 2.4 Derived concepts
 
@@ -570,6 +570,7 @@ This turns trauma from a local signal into a system event, and it requires an ex
 | NoisyFlow | State × Value | `FluxVar[NoisyFloat]` |
 | Polyphonic Identity | Survival | `PolyphonicIdentity`: masks; `in_group` does not name the role |
 | Deadname Erasure | Survival | `erase` / `rotate_all` inside the book, not inside panic |
+| Scar Memory | Survival | `ScarMemory`: mark / amplify / fade; not inside panic (DR-028) |
 | Consent-First | Survival | the ethics of destructive operations |
 
 The criterion: if a new concept does not follow from the three axes, it is either surplus, or it is a reason to revisit the basis.
@@ -600,20 +601,25 @@ The completeness claim is a **working hypothesis**. If, as the work develops, a 
 | Component | Status | Language |
 |---|---|---|
 | `FluxVar<T>`, `flow()`, `classify_jump` | Python library | Python |
-| `NoisyFloat`, `weighted_mean` | Python library | Python |
+| `NoisyFloat`, `weighted_mean`, `NoisyFlow` alias | Python library | Python |
 | `FlowingTrit` | Python library | Python |
-| `SurvivalState` | Python library | Python |
+| `SurvivalState` (scope hooks) | Python library | Python |
 | `PolyphonicIdentity` (`erase`, `rotate_all`) | Python library | Python |
-| `TransfluxSystem` (orchestrator, backup mode) | Python library | Python |
+| `IdentityLedger` (cross-book `erase`) | Python library | Python |
+| `TransfluxSystem` (orchestrator, backup, stale/margin) | Python library | Python |
+| `stale_threat`, `uncertainty_margin_threat` | Python library | Python |
+| `weighted_mean(..., correlation= / covariance=)` | Python library | Python |
+| `PolyphonicIdentity.live` / `erase_live` | Python library | Python |
+| `ScarMemory` (`mark`, `amplify`, `fade`) | Python library | Python |
 | Synthetic scenarios | `tests/synthetic/`, charts in `docs/figures/synthetic/` | Python |
 | The `~>` operator / DSL / LUMEN | deferred | — |
 | Rust, neuromorphic hardware, benchmarks, ML wrappers | deferred | — |
 
 ### 7.2 Roadmap
 
-**Where we are (October 2026).** The Python library is the carrier of the paradigm (DR-019). Synthetic scenarios run the three axes together. Other stacks are not being chosen.
+**Where we are (October 2026).** The Python library is the carrier of the paradigm (DR-019). Synthetic scenarios run the three axes together. Other stacks are not being chosen. Comfort moves on trauma/calm (DR-024); scope selects an optional panic hook (DR-025); cross-book erase goes through `IdentityLedger` (DR-026); `weighted_mean` accepts scalar correlation and full covariance (DR-027, DR-029); `ScarMemory` is an opt-in vigilance type (DR-028); live book discovery is opt-in at erase (DR-030).
 
-**If the same library is deepened:** `scope` is still only a label; `erase` does not see hashes outside its book; `comfort` does not move by itself; `NoisyFlow` is not a separate type; `weighted_mean` assumes the readings are independent. The details are in [ROADMAP.md](../../ROADMAP.md).
+**If the same library is deepened:** other research-backlog ideas remain hypotheses; a DSL and other runtimes stay deferred. The details are in [ROADMAP.md](../../ROADMAP.md).
 
 **Deferred:**
 
@@ -630,7 +636,7 @@ The following ideas are recorded without a commitment to enter the core, and wit
 | Chosen Family Topology | State | a dependency graph as relationships with history and trust |
 | Body-Budget Scheduler | State | a scheduler with a model of "energy" and "fatigue" |
 | Liminal Type Inference | Value | intermediate types as valid states |
-| Scar Memory | Survival | stronger checks in places where failures already happened |
+| ~~Scar Memory~~ | Survival | **in library as `ScarMemory`** (DR-028) |
 | Euphoria-Driven Optimization | Value | maximizing comfort instead of minimizing loss |
 | Algebra of Change | State | operations on changes, composition of transformations |
 | Time-Native Programming | State | time and causality as first-class |

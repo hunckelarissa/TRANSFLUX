@@ -34,6 +34,8 @@ TRANSFLUX = Flow(State) · Uncertainty(Value) · Adaptation(Survival)
 | FlowingTrit | FluxVar | Непрерывный трит: float, полюса `-1`, `0`, `+1`; `-0.5` допустим |
 | Continuous Becoming | FluxVar | Вычисление = поток, не вызов |
 | Polyphonic Identity | SurvivalState | `PolyphonicIdentity`: маски; `in_group` не называет роль |
+| Identity Ledger | SurvivalState | `IdentityLedger`: зарегистрированные книги; `erase` между ними |
+| Scar Memory | SurvivalState | `ScarMemory`: mark / amplify / fade; не внутри panic |
 | Deadname Erasure | SurvivalState | `erase` / `rotate_all`: старого хеша в книге не остаётся |
 | Consent-First | SurvivalState | Деструктивные операции требуют явного согласия |
 
@@ -134,6 +136,13 @@ TRANSFLUX = Flow(State) · Uncertainty(Value) · Adaptation(Survival)
 | DR-021 | Запасной режим | Panic залипает только если заранее задана пара backup |
 | DR-022 | classify_jump | alone / shared / calm; confidence не меняет |
 | DR-023 | Маски отдельно от panic | Стирание имён только явным вызовом |
+| DR-024 | Comfort движется | Trauma снижает, спокойный шаг поднимает |
+| DR-025 | Scope-хуки | Опциональный хук panic по значению `scope` |
+| DR-026 | IdentityLedger | Стирание между книгами только для зарегистрированных |
+| DR-027 | Коррелированное среднее | `weighted_mean(..., correlation=ρ)` |
+| DR-028 | ScarMemory | Opt-in шрамы; panic сам их не ставит |
+| DR-029 | Полная ковариация | `weighted_mean(..., covariance=Σ)` GLS |
+| DR-030 | Автопоиск книг | `live` / `erase_live` / `discovered=True` |
 
 ---
 

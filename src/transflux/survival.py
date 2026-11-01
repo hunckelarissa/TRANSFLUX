@@ -40,6 +40,9 @@ class SurvivalState:
     )
     decay_rate: float = 0.0             # затухание threat за цикл
     on_panic: Optional[Callable] = field(default=None, repr=False)
+    on_panic_local: Optional[Callable] = field(default=None, repr=False)
+    on_panic_process: Optional[Callable] = field(default=None, repr=False)
+    on_panic_system: Optional[Callable] = field(default=None, repr=False)
     peak_threat: float = 0.0           # уровень до сброса panic в этом update
     _panic_count: int = field(default=0, repr=False)
 
@@ -89,10 +92,10 @@ class SurvivalState:
         1. Инкремент счётчика panic.
         2. Генерация нового identity_hash.
         3. Сброс threat_level в 0.
-        4. Эффекты зависят от scope:
-           - local: только текущий контекст;
-           - process: сброс соединений, ротация ключей;
-           - system: ротация всей инфраструктуры идентичности.
+        4. Общий on_panic, затем scope-хук (Consent-First: хуки опциональны):
+           - local → on_panic_local;
+           - process → on_panic_process;
+           - system → on_panic_system.
         """
         self._panic_count += 1
         old_hash = self.identity_hash
@@ -100,8 +103,53 @@ class SurvivalState:
         self.threat_level = 0.0
         if self.on_panic:
             self.on_panic(self, old_hash)
+        scope_hook = {
+            "local": self.on_panic_local,
+            "process": self.on_panic_process,
+            "system": self.on_panic_system,
+        }.get(self.scope)
+        if scope_hook:
+            scope_hook(self, old_hash)
         return self.fallback
 
     def is_safe(self) -> bool:
         """Уровень угрозы значительно ниже порога."""
         return self.threat_level < self.panic_threshold * 0.5
+
+
+def stale_threat(
+    elapsed: float,
+    timeout: float,
+    sensitivity: float = 1.0,
+) -> float:
+    """Угроза от долгого отсутствия сигнала.
+
+    Пока elapsed < timeout — 0. Дальше растёт как
+    ((elapsed − timeout) / timeout) × sensitivity, верх — 1.0.
+    """
+    if timeout <= 0:
+        raise ValueError("timeout must be positive")
+    if elapsed < timeout:
+        return 0.0
+    return min(1.0, ((elapsed - timeout) / timeout) * sensitivity)
+
+
+def uncertainty_margin_threat(
+    noisy: "NoisyFloat",
+    max_uncertainty: float,
+    sensitivity: float = 1.0,
+) -> float:
+    """Угроза, когда σ выше допустимого запаса.
+
+    Пока uncertainty ≤ max_uncertainty — 0. Дальше растёт как
+    ((σ − margin) / margin) × sensitivity при margin > 0;
+    при margin = 0 любой положительный σ даёт sensitivity (клип в 1.0).
+    """
+    if max_uncertainty < 0:
+        raise ValueError("max_uncertainty must be non-negative")
+    if noisy.uncertainty <= max_uncertainty:
+        return 0.0
+    if max_uncertainty == 0.0:
+        return min(1.0, sensitivity)
+    excess = noisy.uncertainty - max_uncertainty
+    return min(1.0, (excess / max_uncertainty) * sensitivity)

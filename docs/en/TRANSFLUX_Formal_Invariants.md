@@ -96,11 +96,13 @@ For `weighted_mean` of independent readings with `σ > 0`:
 
 | ID | Property | Statement |
 |---|---|---|
-| OP-9 | The uncertainty formula | `σ = 1 / √(Σ 1/σ_i²)` |
+| OP-9 | The uncertainty formula | `σ = 1 / √(Σ 1/σ_i²)` when `correlation = 0` |
 | OP-10 | An exact reading dominates | A participant with `σ = 0` sets the value; participants with `σ > 0` do not move it |
 | OP-11 | Empty input | An empty list → `ValueError` |
+| OP-12 | Correlation inflates σ | For `ρ ∈ [0, 1]` and `σ_i > 0`: `σ = σ_indep · √(1+(n−1)ρ)` (DR-027) |
+| OP-13 | GLS covariance | With a valid Σ: `μ = (1ᵀΣ⁻¹x)/(1ᵀΣ⁻¹1)`, `σ = 1/√(1ᵀΣ⁻¹1)` (DR-029) |
 
-Confidence here is a weighted mean of the confidences, not `min` (DR-020). The exception: if the value is determined only by readings with `σ = 0`, the result's confidence is the `min` among them.
+Confidence here is a weighted mean of the confidences, not `min` (DR-020). With `correlation=ρ` or a covariance matrix it blends toward `min` as dependence grows. The exception: if the value is determined only by readings with `σ = 0`, the result's confidence is the `min` among them.
 
 ---
 

@@ -9,7 +9,7 @@ from typing import Any, Optional
 
 from .flux_var import FluxVar
 from .noisy_float import NoisyFloat
-from .survival import SurvivalState
+from .survival import SurvivalState, stale_threat, uncertainty_margin_threat
 
 
 @dataclass
@@ -26,8 +26,19 @@ class TransfluxSystem:
     backup_value: Any = None
     backup_noisy: Optional[NoisyFloat] = None
     degraded: bool = False
+    signal_timeout: Optional[float] = None
+    stale_sensitivity: float = 1.0
+    uncertainty_limit: Optional[float] = None
+    margin_sensitivity: float = 1.0
 
-    def tick(self, new_value, noisy_value: NoisyFloat, dt: float = 1.0) -> bool:
+    def tick(
+        self,
+        new_value,
+        noisy_value: NoisyFloat,
+        dt: float = 1.0,
+        *,
+        signal_age: Optional[float] = None,
+    ) -> bool:
         """Один цикл обновления всех осей.
 
         Порядок фиксирован:
@@ -36,8 +47,10 @@ class TransfluxSystem:
         3. Value запоминается как последнее наблюдение.
         4. Резкая velocity повышает угрозу.
         5. Низкий confidence повышает угрозу.
-        6. Если случился panic и задан fallback — state течёт к нему.
-        7. Если panic и запасная пара задана — режим остаётся включённым.
+        6. Опционально: долгое молчание сигнала (signal_age + signal_timeout).
+        7. Опционально: σ выше uncertainty_limit.
+        8. Если случился panic и задан fallback — state течёт к нему.
+        9. Если panic и запасная пара задана — режим остаётся включённым.
 
         Возвращает True, если на этом цикле был panic.
         """
@@ -57,7 +70,32 @@ class TransfluxSystem:
         panicked |= self.survival.update_from_uncertainty(
             noisy_value, self.uncertainty_sensitivity
         )
-        self.peak_threat = max(flow_peak, self.survival.peak_threat)
+        peaks = [flow_peak, self.survival.peak_threat]
+
+        if (
+            signal_age is not None
+            and self.signal_timeout is not None
+        ):
+            panicked |= self.survival.update(
+                stale_threat(
+                    signal_age,
+                    self.signal_timeout,
+                    self.stale_sensitivity,
+                )
+            )
+            peaks.append(self.survival.peak_threat)
+
+        if self.uncertainty_limit is not None:
+            panicked |= self.survival.update(
+                uncertainty_margin_threat(
+                    noisy_value,
+                    self.uncertainty_limit,
+                    self.margin_sensitivity,
+                )
+            )
+            peaks.append(self.survival.peak_threat)
+
+        self.peak_threat = max(peaks)
 
         if panicked and self.survival.fallback is not None:
             self.state.flow(self.survival.fallback, dt)
